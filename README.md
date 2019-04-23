@@ -1,10 +1,16 @@
 
-  ## batch-6-chess-multiplayer
+## batch-6-chess-multiplayer
 
-  ### Instructions
-  - Please create a issue first and then attach that issue to the PR, so that every one know what’s the need of the PR. Attaching issues to the PR using github keywords, will close the issues once the PR is merged. More info [here]((https://help.github.com/en/articles/closing-issues-using-keywords)).
+### Goal:
+Build a online chess game which allows visitors to play live chess against other visitors.
 
-  - Please follow a common git commit style guide. Somewhat similar to [this guide](https://udacity.github.io/git-styleguide/)
+### Features:
+* User Authentication
+* Player Rating
+* Leader Board
 
-  - All PRs should be [Rebase And Merged](https://help.github.com/en/articles/about-pull-request-merges#rebase-and-merge-your-pull-request-commits)
-  
+### Team
+* Sagar
+* Chirag
+* Prabhakar
+* Mayank
