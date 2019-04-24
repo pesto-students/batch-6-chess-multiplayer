@@ -22,5 +22,7 @@
   },
   "scripts": {
     "lint": "npx eslint ."
+  },
+  "dependencies": {
   }
 }
