@@ -1,5 +1,8 @@
 import React from 'react';
 
+import ChessBoard from './components/chessboard/chessboard';
+
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -33,6 +36,7 @@ class App extends React.Component {
           {text}
           {' '}
         </h1>
+        <ChessBoard />
       </div>
     );
   }

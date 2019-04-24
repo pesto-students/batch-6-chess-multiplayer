@@ -1,0 +1,23 @@
+.chess-board{
+  display: grid;
+  height: 95vw;
+  width: 95vw;
+  border: 1px solid rgb(194, 72, 72);
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.dark-square{
+  background-color: rgb(73, 15, 15);
+}
+
+.light-square{
+  background-color: white;
+}
+
+@media (min-width: 1024px){
+  .chess-board{
+    height: 35vw;
+    width: 35vw;
+    border: 12px solid rgb(194, 72, 72);
+  }
+}
