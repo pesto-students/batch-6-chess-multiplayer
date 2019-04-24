@@ -21,6 +21,11 @@
     }
   },
   "scripts": {
-    "lint": "npx eslint ."
+    "test": "yarn test:client",
+    "test:client": "cd client && CI=true yarn test",
+    "lint": "npx eslint .",
+    "postinstall": "yarn install:client && yarn install:server",
+    "install:client": "cd client && yarn install",
+    "install:server": "cd server && yarn install"
   }
 }
