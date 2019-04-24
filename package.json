@@ -1,0 +1,9 @@
+{
+  "name": "batch-6-chess-multiplayer",
+  "version": "1.0.0",
+  "description": "Online chess game",
+  "main": "index.js",
+  "repository": "https://github.com/pesto-students/batch-6-chess-multiplayer.git",
+  "author": "batch-6",
+  "license": "MIT"
+}
