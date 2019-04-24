@@ -6,5 +6,16 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "nodemon": "^1.18.11"
+  },
+  "scripts": {
+    "build": "babel src -d dist --source-maps",
+    "start": "yarn build && nodemon dist/index.js",
+    "serve": "yarn build && node dist/index.js"
   }
 }
