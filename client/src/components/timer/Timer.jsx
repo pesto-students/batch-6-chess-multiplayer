@@ -1,26 +1,25 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { convertSecToMinSecStr } from '../../utils/timeUtil';
 import './timer.css';
 
-class Timer extends PureComponent {
-  render() {
-    const { time, className } = this.props;
-    const timeString = convertSecToMinSecStr(time);
-    return (
-      <span className={className}>{timeString}</span>
-    );
-  }
+function Timer(props) {
+  const { time, classes } = props;
+  const className = `timer ${classes}`;
+  const timeString = convertSecToMinSecStr(time);
+  return (
+    <span className={className}>{timeString}</span>
+  );
 }
 
 Timer.propTypes = {
   time: PropTypes.number,
-  className: PropTypes.string,
+  classes: PropTypes.string,
 };
 
 Timer.defaultProps = {
   time: 0,
-  className: 'timer',
+  classes: '',
 };
 
 export default Timer;

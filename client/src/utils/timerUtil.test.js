@@ -7,10 +7,11 @@ describe('convertSecToMinSecStr: Test timer convertion', () => {
     expect(convertSecToMinSecStr(0)).toBe('00:00');
   });
 
-  // TODO: test negative cases after test framework is integrated.
-  // Also, need to discuss with team on expected behaviour of below cases.
-  // handles number > 60 minutes'
-  // handles empty string, null, undefined input.
-  // handles negative numbers.
-  // handles number passed as string
+  it('should return time when min > 60', () => {
+    expect(convertSecToMinSecStr(5005)).toBe('83:25');
+  });
+
+  it('Should accept numbers passed as string', () => {
+    expect(convertSecToMinSecStr('719')).toBe('11:59');
+  });
 });
