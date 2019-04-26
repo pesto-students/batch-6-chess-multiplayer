@@ -1,0 +1,18 @@
+.dark-square{
+  background-color: rgb(202, 125, 81);
+}
+.light-square{
+  background-color: white;
+}
+.dark-square, .light-square {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+}
+.dark-square > img, .light-square > img {
+  width: 100%;
+  height: auto;
+}
+.square-highlight {
+  box-shadow: 0 2px 7px 7px blue inset;
+}
