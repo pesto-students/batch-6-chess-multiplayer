@@ -1,0 +1,19 @@
+.chess-board{
+  display: grid;
+  height: 90vw;
+  width: 90vw;
+  border: 1px solid rgb(194, 72, 72);
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  align-content: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 1024px){
+  .chess-board{
+    height: 35vw;
+    width: 35vw;
+    border: 12px solid rgb(194, 72, 72);
+  }
+}

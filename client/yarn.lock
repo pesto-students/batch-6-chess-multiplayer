@@ -2272,6 +2272,10 @@ cheerio@^1.0.0-rc.2:
     lodash "^4.15.0"
     parse5 "^3.0.1"
 
+"chess.js@https://github.com/jhlywa/chess.js#master":
+  version "0.10.3-dev"
+  resolved "https://github.com/jhlywa/chess.js#77531b82f0fd5f372250cb0d9d81d435a0d69152"
+
 chokidar@^2.0.0, chokidar@^2.0.2, chokidar@^2.0.4:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.5.tgz#0ae8434d962281a5f56c72869e79cb6d9d86ad4d"
