@@ -16,7 +16,8 @@
   ],
   "rules": {
     "react/jsx-filename-extension": 0,
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "react/forbid-prop-types": [2, { "forbid": ["any", "object"] }]
   },
   "settings": {
     "react": {
