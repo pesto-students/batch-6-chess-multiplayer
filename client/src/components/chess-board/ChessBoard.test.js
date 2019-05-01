@@ -9,7 +9,7 @@ const board = chess.board();
 
 describe('<ChessBoard />', () => {
   describe('generateGrid()', () => {
-    const wrapper = shallow(<ChessBoard />);
+    const wrapper = shallow(<ChessBoard calcPossibleMoves={() => true} movePiece={() => true} />);
     const instance = wrapper.instance();
     test('generateGrid() should exist', () => {
       expect(Object.hasOwnProperty.call(instance, 'generateGrid')).toBe(true);

@@ -14,7 +14,7 @@ class ChessSquare extends React.Component {
     const {
       isDark, highlight, pieceType, pieceColor, gridPosition,
     } = this.props;
-    const key = `${pieceType}${pieceColor}`;
+    const key = `${pieceColor}${pieceType}`;
     if (Object.hasOwnProperty.call(chessPieces, key)) {
       piece = chessPieces[key];
     }
