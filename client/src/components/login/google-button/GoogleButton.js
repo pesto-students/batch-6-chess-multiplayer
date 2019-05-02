@@ -22,13 +22,11 @@ const GoogleButton = (props) => {
       buttonText="Login with Google"
       onSuccess={onSuccess}
       onFailure={onFailure}
-      theme="dark"
     />
   );
 };
 
 GoogleButton.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.any.isRequired,
 };
 
