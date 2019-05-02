@@ -1,8 +1,11 @@
 import express from 'express';
 import 'dotenv/config';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
 import cors from 'cors';
 import db from './config/database';
 import Config from './config/config';
+
 
 db.connectDb();
 
@@ -10,6 +13,8 @@ const app = express();
 const port = Config.server.SERVER_PORT;
 const { log } = console;
 app.use(cors());
+app.use(helmet());
+app.use(bodyParser.json());
 
 app.get('/api', (req, res) => res.json({ text: 'Online Chess Game!' }));
 
