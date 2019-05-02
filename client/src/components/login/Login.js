@@ -2,10 +2,10 @@ import React from 'react';
 import './login.css';
 import GoogleButton from './google-button/GoogleButton';
 
-const Login = () => (
+const Login = props => (
   <div id="content">
     <p>Multiplayer Chess</p>
-    <GoogleButton />
+    <GoogleButton {...props} />
   </div>
 );
 
