@@ -2,8 +2,21 @@ language: node_js
 node_js:
 - 11.12.0
 script:
-  - yarn test
+- yarn test
+env:
+  global:
+  - CI=true
+  - secure: XdQDTh2aK2OfnApjq9XGyd5hrKu0uPYddy3XgeajRydUNgo5bJvFKsupitsmGMpNE7p64ON6mNzsh7RUxyjwwffa5TfOSlY1TkkjpKHrbtUUM1gXWD9bBHhBMOrxixmzM3IeEeArYr6NdRuFYvQ9VU8kDptMnWEfMJJfFW/ZCdBRDQqYCu7aXK6ASbweos+sGwcYGu2vt0bRZIWzdH8zc9jqO3jlI3WV7AysJmBzTnYCAtFXf2e482y2lpBevt2BYcGnn1NQt4eK+K6UK+74uaaDa4/zrktEOqsovkGxM/MidSIg0dIidR1qHytOOX7jBfsS8O7Fwvydy4lgwJfx/PP3+4KHTvTWSaTSHBPoK56nU7/qjrwKgKJTYQP/014G/fsyvfneQz5N98oW/0o1qGIopWYdx4LavTSU6FyuuohPD8APvzRnDFLiDo8ORsjQlYJ5yTFHGNve6sQswuyFXal29cT+qNo3iB3QTTfQULyoCItGYsUYjkvFx3Ak/Fneg/ZeBuqlbIGrfT/xFKlvJjpAcEHk6v3lOijvVT5/N7ClUs0si4oIdXVPBVroSaC0jic3iD633a8Jd18WkdeQC6sKkApx7QbQC9ETDf00s1ZnclFJM+DR+dQgc8Zsd6dzGfUBl4/PXHC6MiaGBgFWB1JvdEs3SbSYHVlO7VUllDQ=
+before_deploy:
+- cd client && npm install netlify-cli -g && yarn build && cd ..
 deploy:
-  provider: heroku
+- provider: script
+  script: netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_ACCESS_TOKEN --dir
+    ./client/build --prod
+  skip_cleanup: true
+  on:
+    branch: master
+- provider: heroku
   api_key:
-    secure: YGDThG8y+gTJvrqVE88fSlhT4fMRaolYGHYTmZ7BCbJAuw/WCUbsLp807MAje36yzQ8V+kIsswF9tcz3bDXq/q8pS5ECDOIZ6dPYvw7qdwOXEhCD0Elp7v8X7DZyZmH1jT0WcBPlTZ9HyLv4nQXgs6Y7I0RtYXUXD3Z7EmXEUvvdEYVKqsfeASMK89+3lJoNY/5m421xwjWjo7BrpQpST+TYVVcqbyFg3Ls4dJo30JahifvnX9TbtekAWCOMVn3k6t039aHTjcMGPTBecNElknT0Ciex88ZqtRmIofO2E5Nx2Gymo+t9+VJv0XXH8nidmUa+pFo/x0AzoBUbultJQseKFoop54TfZvR00pThM9y0mWcrDPJ1itXG8LQuvfSSbpl+YQINb7Xim+9xMZkd2UvqFbU1uohQSisdT7dFZPblfTM3paTOWS8Wa0dGA8pUmv7DPAvDDw9ATtQR0nhFEqUiTardyuyzpfREXDRxlUjL8ZX6Zca8kdYAktF1dGIm6Iyso+axidvCg8fDx/6DVQheljFlQU7jnnMt9qy/m6nyIVA1UB4DHDX5qD19SZD0RiYVnuP+TFnipE/bggOyCiGlLvwbUus+k1mdtD66tuoA3GTU1g4/uwxIclfIagvRDuR9l9LygQdCg+DX+n/QWbsy3lIAcXxzfsQQq5XBjd4=
+    secure: VMCsslNzRQK0ssZE0D5/JJDhtO8b/qdJiDpyiNiVk1VVZhn7fCbwPGeP9WI8Z7DLy5W/tYnPJBHcPjfMM4nwXaoOPIKpllRXb/K6qHRuEd3xoFTUPTUcNme6FAiFaPPex+1ijoog5O6i3JFS3GReL/LRUuYVEMyezc6PUhNeiCC/aJU4Z4If/iB3D7GEax5g0CRPfFX1yOlBedYBzfICMY9dHNKwMBdqEqL6sGoEWGP7H0XouFcPCxOVO7WbpU/gv1C2AUFeUaQPx+/txVn7m/dwmMngjx0aKj0XSW3TFr7kjQ06A1pOGeD0IPSM7X2CLegokzWVJ3f7qJzoLe+exKqqnTjPWpC+fxvIrb9ipzmm0EmGw/RUWEQ8mzESFbAzkQtGf6dSKp6hQxdLmpAk5I8vmGAcw5wbEyxir/xmwlXvjY+xH7hLky4rsq6WwDUu85Jo9UlGJ6dp+e/CVPmyV/44iKT8Mr/Ivh+u0Nh+WTo2m3f34sVyT94nBs3BSIShS1GjG9CBeVAp5b4oH3Fyn+sgKWAmx5UddzQksJ3mojk4spCsqpi7YCzlSzi6QpBNwfxZVxYfmX06qzN5IKhEZ0NL/tl2YAUy3ji4tMNeCCYqQ7UCgrQNk2Fi/P+lbg81lgUfeFoOxLt7cU+nfr78HPn7h5l8mSNqul0kSrUNNEA=
+  app: online-chess-batch-6
