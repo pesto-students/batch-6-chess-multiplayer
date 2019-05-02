@@ -11,7 +11,7 @@ const port = Config.server.SERVER_PORT;
 const { log } = console;
 app.use(cors());
 
-app.get('/api', (req, res) => res.json({ text: 'Hello World!' }));
+app.get('/api', (req, res) => res.json({ text: 'Online Chess Game!' }));
 
 app
   .listen(port, () => log(`Example app listening on port ${port}!`))

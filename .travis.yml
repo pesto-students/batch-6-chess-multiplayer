@@ -11,13 +11,12 @@ env:
 before_deploy:
 - cd client && npm install netlify-cli -g && yarn build && cd ..
 deploy:
-- provider: script
-  script: netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_ACCESS_TOKEN --dir
-    ./client/build --prod
-  skip_cleanup: true
-  on:
-    branch: master
-- provider: heroku
-  api_key:
-    secure: VMCsslNzRQK0ssZE0D5/JJDhtO8b/qdJiDpyiNiVk1VVZhn7fCbwPGeP9WI8Z7DLy5W/tYnPJBHcPjfMM4nwXaoOPIKpllRXb/K6qHRuEd3xoFTUPTUcNme6FAiFaPPex+1ijoog5O6i3JFS3GReL/LRUuYVEMyezc6PUhNeiCC/aJU4Z4If/iB3D7GEax5g0CRPfFX1yOlBedYBzfICMY9dHNKwMBdqEqL6sGoEWGP7H0XouFcPCxOVO7WbpU/gv1C2AUFeUaQPx+/txVn7m/dwmMngjx0aKj0XSW3TFr7kjQ06A1pOGeD0IPSM7X2CLegokzWVJ3f7qJzoLe+exKqqnTjPWpC+fxvIrb9ipzmm0EmGw/RUWEQ8mzESFbAzkQtGf6dSKp6hQxdLmpAk5I8vmGAcw5wbEyxir/xmwlXvjY+xH7hLky4rsq6WwDUu85Jo9UlGJ6dp+e/CVPmyV/44iKT8Mr/Ivh+u0Nh+WTo2m3f34sVyT94nBs3BSIShS1GjG9CBeVAp5b4oH3Fyn+sgKWAmx5UddzQksJ3mojk4spCsqpi7YCzlSzi6QpBNwfxZVxYfmX06qzN5IKhEZ0NL/tl2YAUy3ji4tMNeCCYqQ7UCgrQNk2Fi/P+lbg81lgUfeFoOxLt7cU+nfr78HPn7h5l8mSNqul0kSrUNNEA=
-  app: online-chess-batch-6
+  - provider: script
+    script: netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_ACCESS_TOKEN --dir ./client/build --prod
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: heroku
+    api_key:
+      secure: U2NU02N1vBuUMcRDTFBLrAMT0Fz6MFDcDua3f7cxrAOzV5k1BZhCxxzAC0rNe3mo4sDS+JVbS+KISbDDaNpPzo1RMRDvgwdhuzTj/Ww7wnx4lh2J2sVVp1bqEk+qhiRDuqeTTEVTpIPpw2w73TH9bFRA/hRvp9X/JF+ZXyonFneaM5Bmj8xaUEjtu9wiIvlbAKEKkJiUkrA8ovtvi4N2nTpxrp4YaqO+kcZJLAElsd1RgKq+6CmrFzQWEEX11syaDWAdj//vs0OfpCx06IN2O4kf91mUFunsHn3zJ7GpoDYei1nML+rTlSRP2zgd9WSLCOLrE7Yuyaf5tAbe174MDUtrd+fy0H/gg8HpUlckqpHxjVuE14+8FFE2F8V1v2XusUjerv+igz6xHNUTkkdnmHt+824zuxp1FInkSIBPq//Tj5nBU3yS6idLE9IiwRPxsyw/1cnYdf8W76X4YPNFBCofCBL5GhznHFobaKDP3BGQFbjhEr8zr9/g7JYR9JjOS00mpU0Ert/bO3ucsGZF1q/VK+tnXkjEol3fN256zA3oFlMYgfe+ebvASQpRtM3hBsvjkXcWaU68Ebq0Agp+Eg526mp4Je/o1kOx8PLGlZTPOHZJ7MplCz1oT6z4ahttZZaNAlX5cA3AJC93rU5/OUSSUvuB4+w7HaD5QDg3HkA=
+    app: online-chess-batch-6

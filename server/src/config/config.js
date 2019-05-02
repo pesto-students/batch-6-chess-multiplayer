@@ -1,7 +1,7 @@
 // DB_HOST, DB_PORT, DB_NAME, CONNECTION_STRING, DB_OPTIONS
 const {
   DB_HOST, DB_PORT, DB_NAME, CONNECTION_STRING, DB_OPTIONS = {},
-  SERVER_PORT,
+  PORT,
 } = process.env;
 
 export default {
@@ -13,6 +13,6 @@ export default {
     DB_OPTIONS: DB_OPTIONS || {},
   },
   server: {
-    SERVER_PORT: SERVER_PORT || 3001,
+    SERVER_PORT: PORT || 3001,
   },
 };
