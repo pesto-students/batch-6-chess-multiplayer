@@ -7,7 +7,7 @@ const GoogleButton = (props) => {
   const onSuccess = (response) => {
     // TODO: 'post' call to Server with the id_token from response
     // console.log(response); // Placeholder till server code is integrated.
-    auth.login(response.Zi.id_token, () => {
+    auth.login('google', response.Zi.id_token, () => {
       props.history.push('/dashboard');
     });
   };
