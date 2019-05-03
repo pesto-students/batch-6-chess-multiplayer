@@ -1,8 +1,14 @@
 {
   "name": "multiplayer-chess-server",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn babel src -d dist --source-maps",
+    "serve": "yarn build && node dist/index.js",
+    "start": "nodemon src/index.js --exec babel-node",
+    "test": "jest"
+  },
   "dependencies": {
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
@@ -10,20 +16,17 @@
     "@hapi/joi": "^15.0.1",
     "axios": "^0.18.0",
     "body-parser": "^1.19.0",
+    "chess.js": "https://github.com/jhlywa/chess.js#master",
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "helmet": "^3.16.0",
-    "mongoose": "^5.5.4"
+    "mongoose": "^5.5.4",
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
+    "@babel/node": "^7.2.2",
     "jest": "^24.7.1",
     "nodemon": "^1.18.11"
-  },
-  "scripts": {
-    "build": "yarn babel src -d dist --source-maps",
-    "start": "yarn build && nodemon dist/index.js",
-    "serve": "yarn build && node dist/index.js",
-    "test": "jest"
   }
 }

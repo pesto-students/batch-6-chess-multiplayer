@@ -3,6 +3,9 @@ import ChessJs from 'chess.js';
 import ChessBoard from '../chess-board/ChessBoard';
 import { BLACK_PLAYER, DEFAULT_GAME_TIME_SECS, WHITE_PLAYER } from '../../config/chess-game';
 import Timer from '../timer/Timer';
+import {
+  createConnection, receiveGameData, sendMove, receiveMove, disconnect,
+} from '../../apis/chessSockets';
 import './ChessGame.css';
 
 /** Following if condition is for Chess.js Module,
@@ -14,6 +17,7 @@ const Chess = typeof ChessJs === 'function' ? ChessJs : ChessJs.Chess;
 
 const INIT_STATE = {
   board: [],
+  playerColor: '',
   currentPlayer: WHITE_PLAYER,
   playerOneTime: DEFAULT_GAME_TIME_SECS,
   playerTwoTime: DEFAULT_GAME_TIME_SECS,
@@ -39,6 +43,13 @@ export default class ChessGame extends React.Component {
     this.startGame();
   }
 
+  componentDidUpdate() {
+    receiveMove((moveObj) => {
+      this.chess.move(moveObj);
+      this.updateBoardState();
+    });
+  }
+
   componentWillUnmount() {
     this.clearTimers();
   }
@@ -49,6 +60,7 @@ export default class ChessGame extends React.Component {
   };
 
   endGame = (player = null) => {
+    disconnect();
     this.clearTimers();
     const message = player === null ? 'Draw match!!' : `${player} has won!`;
     this.setState({ gameOverMessage: message, isGameOver: true });
@@ -98,16 +110,27 @@ export default class ChessGame extends React.Component {
   };
 
   startGame() {
-    this.clearTimers();
+    createConnection();
     this.chess = new Chess();
     this.squares = this.chess.SQUARES;
     const board = this.chess.board();
+
     const currentPlayer = this.chess.turn();
-    this.setState(Object.assign({}, INIT_STATE, { board, currentPlayer }));
+    receiveGameData(({ game }) => {
+      let { playerColor } = this.state;
+      if (!playerColor && !game.player2) {
+        playerColor = game.player1.color;
+      }
+      if (!playerColor && game.player2) {
+        playerColor = game.player2.color;
+      }
+      this.setState(Object.assign({}, INIT_STATE, { board, currentPlayer, playerColor }));
+    });
   }
 
   movePiece(from, to) {
     this.chess.move({ from, to });
+    sendMove({ from, to });
     this.updateBoardState();
     if (this.chess.history().length > 1) {
       this.flipTimer();
@@ -130,6 +153,7 @@ export default class ChessGame extends React.Component {
 
   render() {
     const {
+      playerColor,
       board,
       isGameOver,
       gameOverMessage,
@@ -146,7 +170,7 @@ export default class ChessGame extends React.Component {
             movePiece={this.movePiece}
             squares={squares}
             board={board}
-            playerColor={WHITE_PLAYER}
+            playerColor={playerColor}
           />
           <Timer time={playerOneTime} />
           <div id="game-over-overlay" style={{ display: isGameOver ? 'block' : 'none' }}>
