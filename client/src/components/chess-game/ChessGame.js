@@ -148,7 +148,8 @@ export default class ChessGame extends React.Component {
   }
 
   calcPossibleMoves(param) {
-    return this.chess.moves(param);
+    const moves = this.chess.moves({ ...param, verbose: true });
+    return moves.map(move => move.to);
   }
 
   render() {
