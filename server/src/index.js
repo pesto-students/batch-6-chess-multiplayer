@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import db from './config/database';
 import Config from './config/config';
-
+import auth from './routes/auth';
 
 db.connectDb();
 
@@ -16,6 +16,7 @@ app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 
+app.use('/auth', auth);
 app.get('/api', (req, res) => res.json({ text: 'Online Chess Game!' }));
 
 app

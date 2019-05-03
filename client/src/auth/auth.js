@@ -1,13 +1,25 @@
+import axios from 'axios';
+
 const auth = {
-  login(token, callback) {
-    localStorage.setItem('isAuthenticated', 'true'); // default true till server is setup.
-    console.log(token);
-    callback(); // This callback is only to spoof successful login till server is setup.
-    //             Will be moved to .then later
+  login(method, token, callback) {
+    const data = {
+      method,
+      access_token: token,
+    };
+    axios.post(process.env.REACT_APP_LOGIN_URL, data)
+      .then((res) => {
+        if (res.data) {
+          localStorage.setItem('isAuthenticated', 'true');
+          callback();
+        }
+      })
+      .catch((err) => {
+        console.log(err); // placeholder till failure reason display is built.
+      });
   },
 
   logout(callback) {
-    localStorage.setItem('isAuthenticated', 'false');
+    localStorage.setItem('isAuthenticated', 'false'); // placeholder till JWT generation is built.
     callback();
   },
 
