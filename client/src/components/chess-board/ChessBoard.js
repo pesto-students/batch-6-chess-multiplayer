@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './ChessBoard.css';
 import ChessSquare from '../chess-square/ChessSquare';
 
-const matchingStringInArray = array => str => array.some(x => x.includes(str));
+const matchingStringInArray = array => str => array.some(x => x === str);
 
 class ChessBoard extends React.Component {
   state = {
