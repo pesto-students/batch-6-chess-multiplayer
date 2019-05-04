@@ -1,4 +1,7 @@
 import axios from 'axios';
+import Config from '../config/globalConfig';
+
+const authEndpoint = `${Config.serverUrl}/auth/login`;
 
 const auth = {
   login(method, token, callback) {
@@ -6,7 +9,7 @@ const auth = {
       method,
       access_token: token,
     };
-    axios.post(process.env.REACT_APP_LOGIN_URL, data)
+    axios.post(authEndpoint, data)
       .then((res) => {
         if (res.data) {
           localStorage.setItem('isAuthenticated', 'true');
