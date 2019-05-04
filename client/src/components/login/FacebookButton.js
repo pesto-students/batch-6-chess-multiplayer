@@ -6,15 +6,12 @@ import auth from '../../auth/auth';
 
 const FacebookButton = (props) => {
   const onSuccess = (response) => {
-    // TODO: 'post' call to Server with the auth_token from response
-    console.log(response); // Placeholder till server code is integrated.
-    auth.login(response.accessToken, () => {
+    auth.login('facebook', response.accessToken, () => {
       props.history.push('/dashboard');
     });
   };
-  const onFailure = (reason) => {
-    // TODO:handle failure response
-    console.log(reason); // Placeholder till server code is integrated.
+  const onFailure = () => {
+    // TODO: Show error screen when implemented
   };
 
   return (

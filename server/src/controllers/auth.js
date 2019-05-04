@@ -1,9 +1,12 @@
 import axios from 'axios';
 import User, { validateUser } from '../models/user';
+import Config from '../config/config';
 
 export const checkUser = async (userData) => {
   const { error } = validateUser(userData);
-  if (error) return error.details[0].message;
+  if (error) {
+    return error.details[0].message;
+  }
   let user = await User.findOne({ email: userData.email });
   if (user) {
     return true;
@@ -22,7 +25,7 @@ export const generateJWT = (userData) => {
 };
 
 export const verifyGoogleToken = async (token) => {
-  const url = `${process.env.GOOGLE_OAUTH_URL}${token}`;
+  const url = `${Config.server.GOOGLE_OAUTH_URL}${token}`;
   const response = await axios.get(url);
   const {
     family_name: familyName,
@@ -39,6 +42,20 @@ export const verifyGoogleToken = async (token) => {
     : false;
 };
 
-export const verifyFBToken = () => {
-  // FB Logic
+export const verifyFBToken = async (accessToken) => {
+  const url = `${Config.server.FACEBOOK_OAUTH_URL}${accessToken}`;
+  return axios.get(url).then((response) => {
+    const {
+      last_name: familyName,
+      first_name: givenName,
+      email,
+      name,
+    } = response.data;
+    const userData = {
+      familyName, givenName, email, name,
+    };
+    return checkUser(userData)
+      ? generateJWT(userData)
+      : false;
+  }).catch(() => false);
 };
