@@ -1,0 +1,9 @@
+#game-over-overlay {
+    background: white;
+    opacity: 0.9;
+    top: 0;
+    left: 0;
+    position: absolute;
+    padding: 0;
+    transition: opacity .5s;
+}

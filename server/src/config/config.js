@@ -18,4 +18,9 @@ export default {
     GOOGLE_OAUTH_URL: 'https://oauth2.googleapis.com/tokeninfo?id_token=',
     FACEBOOK_OAUTH_URL: 'https://graph.facebook.com/me?fields=name,email,first_name,last_name&access_token=',
   },
+  chessGame: {
+    WHITE_PLAYER: 'w',
+    BLACK_PLAYER: 'b',
+    GAME_DRAW: 'draw',
+  },
 };
