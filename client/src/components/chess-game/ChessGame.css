@@ -2,15 +2,3 @@
     display: block;
     position: relative;
 }
-#chess-game-container #game-over-overlay {
-    background: white;
-    height: 35vw;
-    width: 35vw;
-    border: 12px solid white;
-    opacity: 0.9;
-    top: 0;
-    left: 0;
-    position: absolute;
-    padding: 0;
-    transition: opacity .5s;
-}

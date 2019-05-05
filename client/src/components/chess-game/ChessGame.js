@@ -1,14 +1,13 @@
 import React from 'react';
 import ChessJs from 'chess.js';
 import ChessBoard from '../chess-board/ChessBoard';
-import { BLACK_PLAYER, DEFAULT_GAME_TIME_SECS, WHITE_PLAYER } from '../../config/chess-game';
+import GameOverOverlay from '../game-over-overlay/GameOverOverlay';
 import Timer from '../timer/Timer';
 import {
-  createConnection,
-  receiveGameData,
-  sendMove,
-  receiveMove,
-  disconnect,
+  BLACK_PLAYER, DEFAULT_GAME_TIME_SECS, WHITE_PLAYER, GAME_DRAW,
+} from '../../config/chess-game';
+import {
+  createConnection, receiveGameData, sendMove, receiveMove, disconnect,
 } from '../../apis/chessSockets';
 import './ChessGame.css';
 
@@ -29,6 +28,8 @@ const blackPlayerBoard = (squares, board) => {
   };
 };
 
+const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
 const INIT_STATE = {
   board: [],
   playerColor: '',
@@ -36,7 +37,9 @@ const INIT_STATE = {
   playerOneTime: DEFAULT_GAME_TIME_SECS,
   playerTwoTime: DEFAULT_GAME_TIME_SECS,
   isGameOver: false,
-  gameOverMessage: '',
+  playerOneRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
+  playerTwoRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
+  winner: '',
 };
 
 export default class ChessGame extends React.Component {
@@ -47,13 +50,15 @@ export default class ChessGame extends React.Component {
   constructor(props) {
     super(props);
     this.state = Object.assign({}, INIT_STATE);
-    this.startGame = this.startGame.bind(this);
-    this.movePiece = this.movePiece.bind(this);
-    this.updateBoardState = this.updateBoardState.bind(this);
-    this.calcPossibleMoves = this.calcPossibleMoves.bind(this);
+    this.chessBoardContainerRef = React.createRef();
   }
 
   componentDidMount() {
+    const chessBoardContainerNode = this.chessBoardContainerRef.current;
+    const {
+      offsetWidth: chessBoardWidth, offsetHeight: chessBoardHeight,
+    } = chessBoardContainerNode;
+    this.setState({ chessBoardWidth, chessBoardHeight });
     this.startGame();
   }
 
@@ -66,6 +71,7 @@ export default class ChessGame extends React.Component {
 
   componentWillUnmount() {
     this.clearTimers();
+    disconnect();
   }
 
   clearTimers = () => {
@@ -73,11 +79,10 @@ export default class ChessGame extends React.Component {
     clearInterval(this.playerTwoIntervalId);
   };
 
-  endGame = (player = null) => {
+  endGame = (player = GAME_DRAW) => {
     disconnect();
     this.clearTimers();
-    const message = player === null ? 'Draw match!!' : `${player} has won!`;
-    this.setState({ gameOverMessage: message, isGameOver: true });
+    this.setState({ isGameOver: true, winner: player });
   };
 
   handleGameOver = () => {
@@ -123,7 +128,7 @@ export default class ChessGame extends React.Component {
     }
   };
 
-  startGame() {
+  startGame = () => {
     createConnection();
     this.chess = new Chess();
     this.squares = this.chess.SQUARES;
@@ -142,7 +147,7 @@ export default class ChessGame extends React.Component {
     });
   }
 
-  movePiece(move) {
+  movePiece = (move) => {
     this.chess.move(move);
     sendMove(move);
     this.updateBoardState();
@@ -154,47 +159,50 @@ export default class ChessGame extends React.Component {
     }
   }
 
-  updateBoardState() {
+  updateBoardState = () => {
     const board = this.chess.board();
     const currentPlayer = this.chess.turn();
-    // eslint-disable-next-line react/no-unused-state
     this.setState({ board, currentPlayer });
   }
 
-  calcPossibleMoves(param) {
-    return this.chess.moves({ ...param, verbose: true });
-  }
+  calcPossibleMoves = param => this.chess.moves({ ...param, verbose: true })
 
   render() {
     const {
-      playerColor, isGameOver, gameOverMessage, playerOneTime, playerTwoTime,
+      playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneRating,
+      playerTwoRating, winner, chessBoardWidth, chessBoardHeight,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
-    if (playerColor === 'b') {
+    if (playerColor === BLACK_PLAYER) {
       const chessBoardData = blackPlayerBoard(squares, board);
       board = chessBoardData.newBoard;
       squares = chessBoardData.newSquares;
     }
     return (
       <>
+        <Timer time={playerTwoTime} />
         <div id="chess-game-container">
-          <Timer time={playerTwoTime} />
           <ChessBoard
+            chessBoardContainerRef={this.chessBoardContainerRef}
             calcPossibleMoves={this.calcPossibleMoves}
             movePiece={this.movePiece}
             squares={squares}
             board={board}
             playerColor={playerColor}
           />
-          <Timer time={playerOneTime} />
-          <div id="game-over-overlay" style={{ display: isGameOver ? 'block' : 'none' }}>
-            <p>{gameOverMessage}</p>
-            <button type="button" onClick={this.startGame}>
-              Play Again
-            </button>
-          </div>
+          {isGameOver && (
+            <GameOverOverlay
+              playerOneRating={playerOneRating}
+              playerTwoRating={playerTwoRating}
+              winner={winner}
+              startGame={this.startGame}
+              width={chessBoardWidth}
+              height={chessBoardHeight}
+            />
+          )}
         </div>
+        <Timer time={playerOneTime} />
       </>
     );
   }
