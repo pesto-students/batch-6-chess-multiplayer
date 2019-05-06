@@ -8,7 +8,7 @@ import db from './config/database';
 import Config from './config/config';
 import auth from './routes/auth';
 import Socket from './sockets/chess.socket';
-
+import authMiddleware from './middleware/auth';
 
 db.connectDb();
 
@@ -22,6 +22,10 @@ app.use(bodyParser.json());
 
 app.use('/auth', auth);
 app.get('/api', (req, res) => res.json({ text: 'Online Chess Game!' }));
+app.get('/dashboard', authMiddleware, (req, res) => {
+  res.send('User'); // placeholder
+  // TODO: have a separate route which uses token in header to get user data using User model.
+});
 
 server
   .listen(port, () => log(`Example app listening on port ${port}!`))

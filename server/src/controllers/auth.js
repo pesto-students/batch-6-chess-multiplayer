@@ -1,6 +1,14 @@
+/* eslint-disable no-underscore-dangle */
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 import User, { validateUser } from '../models/user';
 import Config from '../config/config';
+
+export const generateJWT = (userId) => {
+  const { JWT_SECRET } = Config.server;
+  const token = jwt.sign({ id: userId }, JWT_SECRET); // TODO: add expiry time.
+  return token;
+};
 
 export const checkUser = async (userData) => {
   const { error } = validateUser(userData);
@@ -9,19 +17,14 @@ export const checkUser = async (userData) => {
   }
   let user = await User.findOne({ email: userData.email });
   if (user) {
-    return true;
+    return user._id;
   }
   user = new User(userData);
-  user = await user.save();
+  await user.save();
   if (user) {
-    return true;
+    return user._id;
   }
   return false;
-};
-
-export const generateJWT = (userData) => {
-  console.log(userData); // placeholder for jwt logic
-  return true;
 };
 
 export const verifyGoogleToken = async (token) => {
@@ -37,9 +40,9 @@ export const verifyGoogleToken = async (token) => {
   const userData = {
     familyName, givenName, email, name, picture,
   };
-  return checkUser(userData)
-    ? generateJWT(userData)
-    : false;
+  const userId = await checkUser(userData);
+  const jwtToken = generateJWT(userId);
+  return jwtToken;
 };
 
 export const verifyFBToken = async (accessToken) => {

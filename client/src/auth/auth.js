@@ -12,7 +12,7 @@ const auth = {
     axios.post(authEndpoint, data)
       .then((res) => {
         if (res.data) {
-          localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('jwt', res.data);
           callback();
         }
       })
@@ -22,12 +22,12 @@ const auth = {
   },
 
   logout(callback) {
-    localStorage.setItem('isAuthenticated', 'false'); // placeholder till JWT generation is built.
+    localStorage.removeItem('jwt'); // placeholder till JWT generation is built.
     callback();
   },
 
   isAuthenticated() {
-    return localStorage.getItem('isAuthenticated');
+    return localStorage.getItem('jwt');
   },
 };
 
