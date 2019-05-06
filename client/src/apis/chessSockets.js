@@ -1,11 +1,10 @@
 import IO from 'socket.io-client';
-
-const { REACT_APP_SERVER_URL } = process.env;
+import Config from '../config/globalConfig';
 
 let socket;
 
 const createConnection = () => {
-  socket = IO.connect(REACT_APP_SERVER_URL);
+  socket = IO.connect(Config.serverUrl);
 };
 
 const receiveGameData = (cb) => {
