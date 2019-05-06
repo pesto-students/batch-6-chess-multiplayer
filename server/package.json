@@ -22,7 +22,8 @@
     "express": "^4.16.4",
     "helmet": "^3.16.0",
     "mongoose": "^5.5.4",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "@babel/node": "^7.2.2",
