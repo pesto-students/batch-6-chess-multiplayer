@@ -14,6 +14,15 @@ import './ChessGame.css';
  * and while running server or building server it exports function
 */
 const Chess = typeof ChessJs === 'function' ? ChessJs : ChessJs.Chess;
+const blackPlayerBoard = (squares, board) => {
+  const newSquares = Array.from(squares);
+  let newBoard = board.map(row => Array.from(row));
+  newSquares.reverse();
+  newBoard = newBoard.map(row => row.reverse()).reverse();
+  return {
+    newSquares, newBoard,
+  };
+};
 
 const INIT_STATE = {
   board: [],
@@ -155,13 +164,18 @@ export default class ChessGame extends React.Component {
   render() {
     const {
       playerColor,
-      board,
       isGameOver,
       gameOverMessage,
       playerOneTime,
       playerTwoTime,
     } = this.state;
-    const { squares } = this;
+    let { board } = this.state;
+    let { squares } = this;
+    if (playerColor === 'b') {
+      const chessBoardData = blackPlayerBoard(squares, board);
+      board = chessBoardData.newBoard;
+      squares = chessBoardData.newSquares;
+    }
     return (
       <>
         <div id="chess-game-container">
@@ -171,7 +185,6 @@ export default class ChessGame extends React.Component {
             movePiece={this.movePiece}
             squares={squares}
             board={board}
-            playerColor={playerColor}
           />
           <Timer time={playerOneTime} />
           <div id="game-over-overlay" style={{ display: isGameOver ? 'block' : 'none' }}>

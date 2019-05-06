@@ -1,14 +1,24 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Chess } from 'chess.js';
 import ChessGame from './ChessGame';
 import ChessBoard from '../chess-board/ChessBoard';
 import Timer from '../timer/Timer';
 
+
+const chess = new Chess();
 describe('<ChessGame />', () => {
   const wrapper = shallow(<ChessGame />);
 
   it('Should render ChessBoard', () => {
     expect(wrapper.find(ChessBoard)).toHaveLength(1);
+  });
+
+  it('Should render render ChessBoard in correct orientation for player with black pieces', () => {
+    wrapper.setState({ playerColor: 'b', board: chess.board() });
+    const chessBoard = wrapper.find(ChessBoard);
+    expect(chessBoard.prop('squares')[0]).toBe('h1');
+    expect(chessBoard.prop('board')[0][0]).toEqual({ type: 'r', color: 'w' });
   });
 
   it('Should have hidden overlay', () => {

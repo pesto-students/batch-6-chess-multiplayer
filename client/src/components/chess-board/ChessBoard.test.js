@@ -9,17 +9,24 @@ const board = chess.board();
 
 describe('<ChessBoard />', () => {
   describe('generateGrid()', () => {
-    const wrapper = shallow(<ChessBoard calcPossibleMoves={() => true} movePiece={() => true} />);
+    const wrapper = shallow(
+      <ChessBoard
+        calcPossibleMoves={() => true}
+        squares={squares}
+        board={board}
+        movePiece={() => true}
+      />,
+    );
     const instance = wrapper.instance();
     test('generateGrid() should exist', () => {
       expect(Object.hasOwnProperty.call(instance, 'generateGrid')).toBe(true);
     });
 
     test('should return null if board is empty array', () => {
-      const grid = instance.generateGrid('white', squares, []);
+      const grid = instance.generateGrid(squares, []);
       expect(grid).toBeNull();
     });
-    const grid = instance.generateGrid('white', squares, board);
+    const grid = instance.generateGrid(squares, board);
 
     test('should return grid containing 64 chess squares', () => {
       expect(grid.length).toBe(64);

@@ -12,7 +12,7 @@ class ChessBoard extends React.Component {
     prevSelectValidTouch: false,
   };
 
-  generateGrid = (playerColor, squares, board) => {
+  generateGrid = (squares, board) => {
     if (board.length === 0) {
       return null;
     }
@@ -61,10 +61,10 @@ class ChessBoard extends React.Component {
   }
 
   render() {
-    const { playerColor, squares, board } = this.props;
+    const { squares, board } = this.props;
     return (
       <div className="chess-board">
-        {this.generateGrid(playerColor, squares, board)}
+        {this.generateGrid(squares, board)}
       </div>
     );
   }
@@ -73,13 +73,11 @@ class ChessBoard extends React.Component {
 ChessBoard.propTypes = {
   calcPossibleMoves: PropTypes.func.isRequired,
   movePiece: PropTypes.func.isRequired,
-  playerColor: PropTypes.string,
   squares: PropTypes.array,
   board: PropTypes.array,
 };
 
 ChessBoard.defaultProps = {
-  playerColor: 'white',
   squares: [],
   board: [],
 };
