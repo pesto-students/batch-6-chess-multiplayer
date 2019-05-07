@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Chess } from 'chess.js';
 import ChessBoard from './ChessBoard';
+import { WHITE_PLAYER } from '../../config/chess-game';
 
 const chess = new Chess();
 const squares = chess.SQUARES;
@@ -15,6 +16,7 @@ describe('<ChessBoard />', () => {
         squares={squares}
         board={board}
         movePiece={() => true}
+        playerColor={WHITE_PLAYER}
       />,
     );
     const instance = wrapper.instance();
@@ -35,39 +37,36 @@ describe('<ChessBoard />', () => {
   });
 
   describe('handleSquareClick()', () => {
-    const { moves } = chess;
-    const movePiece = (from, to) => {
-      chess.move(to);
+    const possibleMoves = () => chess.moves({ verbose: true });
+    const movePiece = (move) => {
+      chess.move(move);
     };
     const wrapper = shallow(
       <ChessBoard
-        calcPossibleMoves={moves}
+        calcPossibleMoves={possibleMoves}
         movePiece={movePiece}
         squares={squares}
         board={board}
       />,
     );
     const { handleSquareClick } = wrapper.instance();
-    const testBoardState = (nextGridPosition, from, prevSelectValidTouch) => {
+    const testBoardState = (nextGridPosition, prevSelectValidTouch) => {
       handleSquareClick(nextGridPosition);
-      expect(wrapper.state('from')).toBe(from);
       expect(wrapper.state('prevSelectValidTouch')).toBe(prevSelectValidTouch);
     };
 
-    test('should set the state property \'from\' to the provided gridPosition object when square with piece is clicked', () => {
-      const gridPosition = 'e2';
-      testBoardState(gridPosition, 'e2', true);
+    test('should change "prevSelectValidTouch"', () => {
+      handleSquareClick('e4');
+      expect(wrapper.state('prevSelectValidTouch')).toBe(true);
     });
 
     test('should reset state when piece is moved', () => {
-      expect(wrapper.state('from')).toBe('e2');
-      testBoardState('e3', '', false);
+      testBoardState('e3', false);
     });
 
     test('should not change the state when square with no valid moves is clicked', () => {
-      expect(wrapper.state('from')).toBe('');
-      testBoardState('e7', 'e7', true);
-      testBoardState('e3', 'e7', true);
+      testBoardState('e3', true);
+      testBoardState('e7', true);
     });
   });
 });

@@ -2,14 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ChessBoard.css';
 import ChessSquare from '../chess-square/ChessSquare';
+import PawnPromotion from './PawnPromotion';
 
-const matchingStringInArray = array => str => array.some(x => x === str);
+const matchPossibleMoves = moveArray => position => moveArray.some(move => move.to === position);
 
 class ChessBoard extends React.Component {
   state = {
     possibleMoves: [],
-    from: '',
     prevSelectValidTouch: false,
+    showPromotion: false,
+    promotionTo: null,
   };
 
   generateGrid = (squares, board) => {
@@ -17,7 +19,7 @@ class ChessBoard extends React.Component {
       return null;
     }
     const { possibleMoves } = this.state;
-    const isValidPosition = matchingStringInArray(possibleMoves);
+    const isValidPosition = matchPossibleMoves(possibleMoves);
     return squares.map((position, index) => {
       const row = parseInt(index / 8, 10);
       const col = index % 8;
@@ -37,49 +39,73 @@ class ChessBoard extends React.Component {
         />
       );
     });
-  }
+  };
 
   handleSquareClick = (gridPosition) => {
-    const { possibleMoves, prevSelectValidTouch, from } = this.state;
+    const { possibleMoves, prevSelectValidTouch } = this.state;
     const { movePiece } = this.props;
-    const isValidMove = matchingStringInArray(possibleMoves)(gridPosition);
-
-    if (prevSelectValidTouch && isValidMove) {
-      movePiece(from, gridPosition);
-      this.setState({ possibleMoves: [], from: '', prevSelectValidTouch: false });
+    const move = possibleMoves.find(mv => mv.to === gridPosition);
+    if (prevSelectValidTouch && move) {
+      if (move.promotion) {
+        this.setState({ showPromotion: true, promotionTo: move.to });
+      } else {
+        movePiece(move);
+        this.setState({ possibleMoves: [], prevSelectValidTouch: false });
+      }
     } else {
       this.updatePossibleMoves(gridPosition);
     }
-  }
+  };
 
   updatePossibleMoves = (gridPosition) => {
     const { calcPossibleMoves } = this.props;
     const possibleMoves = calcPossibleMoves({ square: gridPosition });
     if (possibleMoves.length > 0) {
-      this.setState({ possibleMoves, from: gridPosition, prevSelectValidTouch: true });
+      this.setState({ possibleMoves, prevSelectValidTouch: true });
     }
-  }
+  };
+
+  makePromotionMove = (selectedPromotionPiece) => {
+    const { movePiece } = this.props;
+    const { promotionTo, possibleMoves } = this.state;
+    const move = possibleMoves.find(
+      mv => mv.to === promotionTo && mv.promotion === selectedPromotionPiece,
+    );
+    movePiece(move);
+    this.setState({
+      possibleMoves: [],
+      prevSelectValidTouch: false,
+      promotionTo: null,
+      showPromotion: false,
+    });
+  };
 
   render() {
-    const { squares, board } = this.props;
+    const { playerColor, squares, board } = this.props;
+    const { showPromotion } = this.state;
+    const promotionDisplay = showPromotion ? 'block' : 'none';
     return (
       <div className="chess-board">
         {this.generateGrid(squares, board)}
+        <div className="promotion-wrapper" style={{ display: promotionDisplay }}>
+          <PawnPromotion onSelect={this.makePromotionMove} pieceColor={playerColor} />
+        </div>
       </div>
     );
   }
 }
 
 ChessBoard.propTypes = {
+  board: PropTypes.array,
   calcPossibleMoves: PropTypes.func.isRequired,
   movePiece: PropTypes.func.isRequired,
+  playerColor: PropTypes.string.isRequired,
   squares: PropTypes.array,
-  board: PropTypes.array,
 };
 
 ChessBoard.defaultProps = {
-  squares: [],
   board: [],
+  squares: [],
 };
 
 export default ChessBoard;

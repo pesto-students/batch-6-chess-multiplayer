@@ -4,7 +4,11 @@ import ChessBoard from '../chess-board/ChessBoard';
 import { BLACK_PLAYER, DEFAULT_GAME_TIME_SECS, WHITE_PLAYER } from '../../config/chess-game';
 import Timer from '../timer/Timer';
 import {
-  createConnection, receiveGameData, sendMove, receiveMove, disconnect,
+  createConnection,
+  receiveGameData,
+  sendMove,
+  receiveMove,
+  disconnect,
 } from '../../apis/chessSockets';
 import './ChessGame.css';
 
@@ -12,7 +16,7 @@ import './ChessGame.css';
  * Chess.js export exports different Object based on environment
  * While testing it exports object
  * and while running server or building server it exports function
-*/
+ */
 const Chess = typeof ChessJs === 'function' ? ChessJs : ChessJs.Chess;
 const blackPlayerBoard = (squares, board) => {
   const newSquares = Array.from(squares);
@@ -20,7 +24,8 @@ const blackPlayerBoard = (squares, board) => {
   newSquares.reverse();
   newBoard = newBoard.map(row => row.reverse()).reverse();
   return {
-    newSquares, newBoard,
+    newSquares,
+    newBoard,
   };
 };
 
@@ -80,9 +85,9 @@ export default class ChessGame extends React.Component {
       const { currentPlayer } = this.state;
       this.endGame(currentPlayer);
     }
-    const isDraw = (this.chess.in_draw()
+    const isDraw = this.chess.in_draw()
     || this.chess.in_stalemate()
-    || this.chess.in_threefold_repetition());
+    || this.chess.in_threefold_repetition();
 
     if (isDraw) {
       this.endGame(null);
@@ -137,9 +142,9 @@ export default class ChessGame extends React.Component {
     });
   }
 
-  movePiece(from, to) {
-    this.chess.move({ from, to });
-    sendMove({ from, to });
+  movePiece(move) {
+    this.chess.move(move);
+    sendMove(move);
     this.updateBoardState();
     if (this.chess.history().length > 1) {
       this.flipTimer();
@@ -157,17 +162,12 @@ export default class ChessGame extends React.Component {
   }
 
   calcPossibleMoves(param) {
-    const moves = this.chess.moves({ ...param, verbose: true });
-    return moves.map(move => move.to);
+    return this.chess.moves({ ...param, verbose: true });
   }
 
   render() {
     const {
-      playerColor,
-      isGameOver,
-      gameOverMessage,
-      playerOneTime,
-      playerTwoTime,
+      playerColor, isGameOver, gameOverMessage, playerOneTime, playerTwoTime,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
@@ -185,11 +185,14 @@ export default class ChessGame extends React.Component {
             movePiece={this.movePiece}
             squares={squares}
             board={board}
+            playerColor={playerColor}
           />
           <Timer time={playerOneTime} />
           <div id="game-over-overlay" style={{ display: isGameOver ? 'block' : 'none' }}>
-            <p>{ gameOverMessage }</p>
-            <button type="button" onClick={this.startGame}>Play Again</button>
+            <p>{gameOverMessage}</p>
+            <button type="button" onClick={this.startGame}>
+              Play Again
+            </button>
           </div>
         </div>
       </>
