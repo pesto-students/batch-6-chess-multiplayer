@@ -37,17 +37,19 @@ class ChessSquare extends React.Component {
 }
 
 ChessSquare.propTypes = {
-  isDark: PropTypes.bool.isRequired,
   gridPosition: PropTypes.string.isRequired,
+  highlight: PropTypes.bool,
+  handleSelect: PropTypes.func.isRequired,
+  isDark: PropTypes.bool,
   pieceType: PropTypes.string,
   pieceColor: PropTypes.string,
-  highlight: PropTypes.bool.isRequired,
-  handleSelect: PropTypes.func.isRequired,
 };
 
 ChessSquare.defaultProps = {
-  pieceType: '',
-  pieceColor: '',
+  highlight: false,
+  isDark: false,
+  pieceType: null,
+  pieceColor: null,
 };
 
 export default ChessSquare;
