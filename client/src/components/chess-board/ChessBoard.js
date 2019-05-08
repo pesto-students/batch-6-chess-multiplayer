@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import './ChessBoard.css';
 import ChessSquare from '../chess-square/ChessSquare';
@@ -6,7 +6,7 @@ import PawnPromotion from './PawnPromotion';
 
 const matchPossibleMoves = moveArray => position => moveArray.some(move => move.to === position);
 
-class ChessBoard extends React.Component {
+class ChessBoard extends PureComponent {
   state = {
     possibleMoves: [],
     prevSelectValidTouch: false,
@@ -14,7 +14,7 @@ class ChessBoard extends React.Component {
     promotionTo: null,
   };
 
-  generateGrid = (squares, board) => {
+  generateGrid = (squares, board, playerColor) => {
     if (board.length === 0) {
       return null;
     }
@@ -36,12 +36,13 @@ class ChessBoard extends React.Component {
           pieceType={type}
           pieceColor={color}
           highlight={highlight}
+          playerColor={playerColor}
         />
       );
     });
   };
 
-  handleSquareClick = (gridPosition) => {
+  handleSquareClick = (gridPosition, pieceColor) => {
     const { possibleMoves, prevSelectValidTouch } = this.state;
     const { movePiece } = this.props;
     const move = possibleMoves.find(mv => mv.to === gridPosition);
@@ -53,14 +54,14 @@ class ChessBoard extends React.Component {
         this.setState({ possibleMoves: [], prevSelectValidTouch: false });
       }
     } else {
-      this.updatePossibleMoves(gridPosition);
+      this.updatePossibleMoves(gridPosition, pieceColor);
     }
   };
 
-  updatePossibleMoves = (gridPosition) => {
-    const { calcPossibleMoves } = this.props;
+  updatePossibleMoves = (gridPosition, pieceColor) => {
+    const { calcPossibleMoves, playerColor } = this.props;
     const possibleMoves = calcPossibleMoves({ square: gridPosition });
-    if (possibleMoves.length > 0) {
+    if (pieceColor === playerColor && possibleMoves.length > 0) {
       this.setState({ possibleMoves, prevSelectValidTouch: true });
     }
   };
@@ -88,7 +89,7 @@ class ChessBoard extends React.Component {
     const promotionDisplay = showPromotion ? 'block' : 'none';
     return (
       <div ref={chessBoardContainerRef} className="chess-board">
-        {this.generateGrid(squares, board)}
+        {this.generateGrid(squares, board, playerColor)}
         <div className="promotion-wrapper" style={{ display: promotionDisplay }}>
           <PawnPromotion onSelect={this.makePromotionMove} pieceColor={playerColor} />
         </div>

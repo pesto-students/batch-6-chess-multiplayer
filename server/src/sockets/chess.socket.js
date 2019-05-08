@@ -15,12 +15,20 @@ const removePlayer2 = (socket) => {
   socket.game.inPlay = false;
 };
 
+const emitValidMove = (moveObj, socket, io, game) => {
+  const opponent = assignOpponentSocket(socket.game, socket.id);
+  const curTime = game.flipTimer();
+  io.to(opponent.socketId).emit('movePiece', { moveObj, time: curTime });
+  socket.emit('movePiece', { moveObj, time: curTime });
+};
+
 const chessSocket = (server) => {
   const io = IO(server);
   io.on('connection', (socket) => {
     const game = games.findGame(socket.id);
     const initTime = game.getTime();
     socket.game = game;
+    socket.playerInfo = game.inPlay ? game.player2 : game.player1;
     if (game.player2) {
       const opponent = assignOpponentSocket(socket.game, socket.id);
       io.to(opponent.socketId).emit('gameData', { game, time: initTime });
@@ -28,20 +36,15 @@ const chessSocket = (server) => {
 
     socket.emit('gameData', { game, time: initTime });
 
-    socket.on('pieceMoved', (moveObj) => {
-      const opponent = assignOpponentSocket(socket.game, socket.id);
-      const curTime = game.flipTimer();
-      io.to(opponent.socketId).emit('movePiece', { moveObj, time: curTime });
-      socket.emit('movePiece', { moveObj, time: curTime });
+    socket.on('pieceMoved', (moveObj, cb) => {
+      const { color } = socket.playerInfo;
+      const isPlayerColor = color === moveObj.color;
+      return isPlayerColor
+        ? emitValidMove(moveObj, socket, io, game)
+        : cb({ validMove: false, playerColor: color });
     });
 
-    socket.on('disconnect', () => {
-      if (!socket.game.inPlay) {
-        games.removeGame(socket.id);
-      } else {
-        removePlayer2(socket);
-      }
-    });
+    socket.on('disconnect', () => (!socket.game.inPlay ? games.removeGame(socket.id) : removePlayer2(socket)));
   });
 };
 
