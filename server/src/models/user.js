@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
   picture: {
     type: String,
   },
+  rating: {
+    type: Number,
+    default: 1500,
+  },
 });
 
 const User = mongoose.model('User', userSchema);

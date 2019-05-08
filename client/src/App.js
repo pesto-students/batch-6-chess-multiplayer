@@ -5,6 +5,7 @@ import ChessGame from './components/chess-game/ChessGame';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
 import Dashboard from './components/dashboard/Dashboard';
+import Leaderboard from './components/leaderboard/Leaderboard';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/chess-game" exact component={ChessGame} />
         <Route path="/" exact component={Home} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute path="/leaderboard" exact component={Leaderboard} />
         <Route path="*" component={() => '404 NOT FOUND'} />
       </Switch>
     </Router>

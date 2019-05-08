@@ -3,3 +3,5 @@
 
 #log files
 *.log
+
+.DS_store
