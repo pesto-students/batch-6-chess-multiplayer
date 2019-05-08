@@ -1,0 +1,10 @@
+#leaderboard-container {
+  width: 100vw;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px){
+  #leaderboard-container {
+    width: 70vw;        
+  }
+}
