@@ -14,8 +14,8 @@ const receiveGameData = (cb) => {
 };
 
 
-const sendMove = (moveObj) => {
-  socket.emit('pieceMoved', moveObj);
+const sendMove = (moveObj, callBack) => {
+  socket.emit('pieceMoved', moveObj, callBack);
 };
 
 const receiveMove = (cb) => {

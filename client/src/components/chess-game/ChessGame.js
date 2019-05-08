@@ -175,7 +175,12 @@ export default class ChessGame extends React.Component {
 
   movePiece = (move) => {
     this.clearTimers();
-    sendMove(move);
+    const restoreBoard = ({ validMove, playerColor }) => {
+      if (!validMove) {
+        this.setState({ playerColor });
+      }
+    };
+    sendMove(move, restoreBoard);
   }
 
   updateBoardState = () => {

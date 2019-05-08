@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import './ChessSquare.css';
 import chessPieces from './chess-pieces';
 
-class ChessSquare extends React.Component {
+class ChessSquare extends PureComponent {
   handleSqClick = () => {
-    const { handleSelect, gridPosition } = this.props;
-    handleSelect(gridPosition);
+    const {
+      handleSelect, gridPosition, pieceColor,
+    } = this.props;
+    handleSelect(gridPosition, pieceColor);
   }
 
   render() {
