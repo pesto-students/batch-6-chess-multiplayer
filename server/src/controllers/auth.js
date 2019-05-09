@@ -1,30 +1,24 @@
 /* eslint-disable no-underscore-dangle */
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import User, { validateUser } from '../models/user';
 import Config from '../config/config';
-
-export const generateJWT = (userId) => {
-  const { JWT_SECRET } = Config.server;
-  const token = jwt.sign({ id: userId }, JWT_SECRET); // TODO: add expiry time.
-  return token;
-};
+import jwtUtil from '../utils/jwt';
 
 export const checkUser = async (userData) => {
   const { error } = validateUser(userData);
   if (error) {
-    return error.details[0].message;
+    return { errorMessage: error.details[0].message };
   }
   let user = await User.findOne({ email: userData.email });
   if (user) {
-    return user._id;
+    return { userId: user._id };
   }
   user = new User(userData);
   await user.save();
   if (user) {
-    return user._id;
+    return { userId: user._id };
   }
-  return false;
+  return {};
 };
 
 export const verifyGoogleToken = async (token) => {
@@ -40,9 +34,16 @@ export const verifyGoogleToken = async (token) => {
   const userData = {
     familyName, givenName, email, name, picture,
   };
-  const userId = await checkUser(userData);
-  const jwtToken = generateJWT(userId);
-  return jwtToken;
+  const { errorMessage, userId } = await checkUser(userData);
+  if (errorMessage) {
+    return { errorMessage };
+  }
+
+  if (userId) {
+    const jwtToken = jwtUtil.generateJWT({ id: userId }, { expiresIn: '1d' });
+    return { accessToken: jwtToken };
+  }
+  return {};
 };
 
 export const verifyFBToken = async (accessToken) => {
@@ -57,8 +58,15 @@ export const verifyFBToken = async (accessToken) => {
     const userData = {
       familyName, givenName, email, name,
     };
-    return checkUser(userData)
-      ? generateJWT(userData)
-      : false;
-  }).catch(() => false);
+    const { errorMessage, userId } = checkUser(userData);
+    if (errorMessage) {
+      return { errorMessage };
+    }
+
+    if (userId) {
+      const jwtToken = jwtUtil.generateJWT({ id: userId }, { expiresIn: '1d' });
+      return { accessToken: jwtToken };
+    }
+    return {};
+  }).catch(err => ({ isError: true, errorMessage: err.message }));
 };

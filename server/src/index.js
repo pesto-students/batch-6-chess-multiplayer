@@ -10,6 +10,7 @@ import auth from './routes/auth';
 import Socket from './sockets/chess.socket';
 import router from './router';
 import authMiddleware from './middleware/auth';
+import userDataMiddleWare from './middleware/user';
 
 const app = express();
 const server = http.createServer(app);
@@ -24,9 +25,9 @@ app.use(bodyParser.json());
 
 app.use('/auth', auth);
 app.use('/', router);
-app.get('/dashboard', authMiddleware, (req, res) => {
-  res.send('User'); // placeholder
-  // TODO: have a separate route which uses token in header to get user data using User model.
+app.get('/get-user', authMiddleware, userDataMiddleWare, (req, res) => {
+  const { user = {} } = req;
+  res.json({ user });
 });
 
 server

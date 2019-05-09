@@ -2,6 +2,7 @@ import express from 'express';
 import { verifyGoogleToken, verifyFBToken } from '../controllers/auth';
 
 const router = express.Router();
+const emptyString = str => str === undefined || str === '';
 
 router.post('/login', async (req, res) => {
   let result;
@@ -10,9 +11,17 @@ router.post('/login', async (req, res) => {
   } else if (req.body.method === 'facebook') {
     result = await verifyFBToken(req.body.access_token);
   } else {
-    return res.status(401);
+    return res.status(422).send('Invalid login method');
   }
-  return res.send(result);
+
+  const { errorMessage, accessToken } = result;
+  if (errorMessage) {
+    return res.status(422).send(errorMessage);
+  }
+  if (emptyString(accessToken)) {
+    return res.status(422).send('Not allowed to login');
+  }
+  return res.json({ accessToken });
 });
 
 export default router;
