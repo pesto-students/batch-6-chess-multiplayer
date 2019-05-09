@@ -4,16 +4,17 @@ import PropTypes from 'prop-types';
 import auth from '../../../auth/auth';
 
 const GoogleButton = (props) => {
+  const { successCallback, failureCallback } = props;
   const onSuccess = (response) => {
-    // TODO: 'post' call to Server with the id_token from response
-    // console.log(response); // Placeholder till server code is integrated.
-    auth.login('google', response.Zi.id_token, () => {
-      props.history.push('/dashboard');
-    });
+    auth.login('google', response.Zi.id_token)
+      .then((res) => {
+        successCallback(res);
+      })
+      .catch(err => failureCallback(err.message));
   };
+
   const onFailure = (response) => {
-    // TODO:handle failure response
-    console.log(response); // Placeholder till server code is integrated.
+    failureCallback(response.message);
   };
 
   return (
@@ -27,7 +28,8 @@ const GoogleButton = (props) => {
 };
 
 GoogleButton.propTypes = {
-  history: PropTypes.any.isRequired,
+  successCallback: PropTypes.func.isRequired,
+  failureCallback: PropTypes.func.isRequired,
 };
 
 export default GoogleButton;

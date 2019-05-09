@@ -4,25 +4,32 @@ import Config from '../config/globalConfig';
 const authEndpoint = `${Config.serverUrl}/auth/login`;
 
 const auth = {
-  login(method, token, callback) {
+  login(method, token) {
     const data = {
       method,
       access_token: token,
     };
-    axios.post(authEndpoint, data)
+    return axios.post(authEndpoint, data)
       .then((res) => {
-        if (res.data) {
-          localStorage.setItem('jwt', res.data);
-          callback();
+        const { accessToken } = res.data;
+        if (!accessToken) {
+          return { loggedIn: false };
         }
-      })
-      .catch((err) => {
-        console.log(err); // placeholder till failure reason display is built.
+        localStorage.setItem('jwt', accessToken);
+        return { loggedIn: true };
       });
   },
 
+  fetchUserData() {
+    return axios.get(`${Config.serverUrl}/get-user`, {
+      headers: {
+        'x-auth-token': localStorage.getItem('jwt'),
+      },
+    }).then(res => res.data);
+  },
+
   logout(callback) {
-    localStorage.removeItem('jwt'); // placeholder till JWT generation is built.
+    localStorage.removeItem('jwt');
     callback();
   },
 

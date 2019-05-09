@@ -5,13 +5,17 @@ import auth from '../../auth/auth';
 
 
 const FacebookButton = (props) => {
+  const { successCallback, failureCallback } = props;
   const onSuccess = (response) => {
-    auth.login('facebook', response.accessToken, () => {
-      props.history.push('/dashboard');
-    });
+    auth.login('facebook', response.accessToken)
+      .then((res) => {
+        successCallback(res);
+      })
+      .catch(err => failureCallback(err.message));
   };
-  const onFailure = () => {
-    // TODO: Show error screen when implemented
+
+  const onFailure = (response) => {
+    failureCallback(response.message);
   };
 
   return (
@@ -29,7 +33,8 @@ const FacebookButton = (props) => {
 };
 
 FacebookButton.propTypes = {
-  history: PropTypes.any.isRequired,
+  successCallback: PropTypes.func.isRequired,
+  failureCallback: PropTypes.func.isRequired,
 };
 
 export default FacebookButton;

@@ -17,7 +17,7 @@ export default {
     // TODO: sanitize these urls
     GOOGLE_OAUTH_URL: 'https://oauth2.googleapis.com/tokeninfo?id_token=',
     FACEBOOK_OAUTH_URL: 'https://graph.facebook.com/me?fields=name,email,first_name,last_name&access_token=',
-    JWT_SECRET: JWT_SECRET || 'MPCS',
+    JWT_SECRET: JWT_SECRET || 'local_env_secret',
   },
   chessGame: {
     WHITE_PLAYER: 'w',
