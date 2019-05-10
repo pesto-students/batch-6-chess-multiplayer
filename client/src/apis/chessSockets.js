@@ -19,8 +19,8 @@ const sendMove = (moveObj) => {
 };
 
 const receiveMove = (cb) => {
-  socket.on('movePiece', (moveObj) => {
-    cb(moveObj);
+  socket.on('movePiece', (moveData) => {
+    cb(moveData);
   });
 };
 

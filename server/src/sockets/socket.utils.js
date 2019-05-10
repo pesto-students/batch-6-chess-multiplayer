@@ -1,20 +1,65 @@
+import { WHITE_PLAYER, BLACK_PLAYER, DEFAULT_TIME } from '../config/gameConfig';
 
 class Game {
   constructor(socketId) {
     this.player1 = {
       socketId,
-      color: 'w',
+      color: WHITE_PLAYER,
     };
     this.inPlay = false;
+    this.timer = {
+      playerOneIntervalId: null,
+      playerTwoIntervalId: null,
+      playerOneTime: DEFAULT_TIME,
+      playerTwoTime: DEFAULT_TIME,
+    };
+    this.currentPlayer = WHITE_PLAYER;
   }
 
   addPlayer2(socketId) {
     this.player2 = {
       socketId,
-      color: 'b',
+      color: BLACK_PLAYER,
     };
     this.inPlay = true;
     return this;
+  }
+
+  startPlayerOneTimer() {
+    return setInterval(() => {
+      this.timer.playerOneTime -= 1;
+    }, 1000);
+  }
+
+  startPlayerTwoTimer() {
+    return setInterval(() => {
+      this.timer.playerTwoTime -= 1;
+    }, 1000);
+  }
+
+  flipTimer() {
+    if (this.currentPlayer === WHITE_PLAYER) {
+      clearInterval(this.timer.playerOneIntervalId);
+      this.timer.playerTwoIntervalId = this.startPlayerTwoTimer(); //
+      this.currentPlayer = BLACK_PLAYER;
+    } else {
+      clearInterval(this.timer.playerTwoIntervalId);
+      this.timer.playerOneIntervalId = this.startPlayerOneTimer();
+      this.currentPlayer = WHITE_PLAYER;
+    }
+    return this.getTime();
+  }
+
+  clearBothTimers() {
+    clearInterval(this.playerOneIntervalId);
+    clearInterval(this.playerTwoIntervalId);
+  }
+
+  getTime() {
+    return {
+      playerOneTime: this.timer.playerOneTime,
+      playerTwoTime: this.timer.playerTwoTime,
+    };
   }
 }
 
@@ -55,7 +100,8 @@ class Games {
     if (gameIdx === -1) {
       return false;
     }
-    live.splice(gameIdx, 1);
+    const game = live.splice(gameIdx, 1)[0];
+    game.clearBothTimers();
     return true;
   }
 }
