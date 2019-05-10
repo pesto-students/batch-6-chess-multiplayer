@@ -1,5 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 export const convertSecToMinSecStr = (sec) => {
+  if (sec <= 0) {
+    return '00:00';
+  }
   const secInAMin = 60;
   let min = Math.floor(sec / secInAMin);
   let remainingSec = sec - min * secInAMin;

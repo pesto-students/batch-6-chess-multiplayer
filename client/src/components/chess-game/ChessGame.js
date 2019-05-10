@@ -5,7 +5,7 @@ import GameOverOverlay from '../game-over-overlay/GameOverOverlay';
 import Loader from '../ui/loader/Loader';
 import Timer from '../timer/Timer';
 import {
-  BLACK_PLAYER, DEFAULT_GAME_TIME_SECS, WHITE_PLAYER, GAME_DRAW,
+  BLACK_PLAYER, WHITE_PLAYER, GAME_DRAW,
 } from '../../config/chess-game';
 import {
   createConnection, receiveGameData, sendMove, receiveMove, disconnect,
@@ -35,8 +35,8 @@ const INIT_STATE = {
   board: [],
   playerColor: '',
   currentPlayer: WHITE_PLAYER,
-  playerOneTime: DEFAULT_GAME_TIME_SECS,
-  playerTwoTime: DEFAULT_GAME_TIME_SECS,
+  playerOneTime: 0,
+  playerTwoTime: 0,
   isGameOver: false,
   playerOneRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
   playerTwoRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
@@ -64,18 +64,27 @@ export default class ChessGame extends React.Component {
       this.setState({ chessBoardWidth, chessBoardHeight });
     }
     this.startGame();
-  }
-
-  componentDidUpdate() {
-    receiveMove((moveObj) => {
-      this.chess.move(moveObj);
-      this.updateBoardState();
-    });
+    receiveMove(moveData => this.onMoveReceived(moveData));
   }
 
   componentWillUnmount() {
     this.clearTimers();
     disconnect();
+  }
+
+
+  onMoveReceived = ({ moveObj, time }) => {
+    this.chess.move(moveObj);
+    this.updateBoardState();
+    const { playerColor } = this.state;
+    const { playerOneTime: serverPlayerOne, playerTwoTime: serverPlayerTwo } = time;
+    const playerOneTime = playerColor === WHITE_PLAYER ? serverPlayerOne : serverPlayerTwo;
+    const playerTwoTime = playerColor === WHITE_PLAYER ? serverPlayerTwo : serverPlayerOne;
+    this.setState({ playerOneTime, playerTwoTime });
+    if (this.chess.game_over()) {
+      this.handleGameOver();
+    }
+    this.resetTimers();
   }
 
   clearTimers = () => {
@@ -84,8 +93,8 @@ export default class ChessGame extends React.Component {
   };
 
   endGame = (player = GAME_DRAW) => {
-    disconnect();
     this.clearTimers();
+    disconnect();
     this.setState({ isGameOver: true, winner: player });
   };
 
@@ -103,32 +112,39 @@ export default class ChessGame extends React.Component {
     }
   };
 
-  startPlayerTwoTimer = () => setInterval(() => {
+  startPlayerTwoTimer = opponent => setInterval(() => {
     let { playerTwoTime } = this.state;
     playerTwoTime -= 1;
     this.setState({ playerTwoTime });
     if (playerTwoTime <= 0) {
-      this.endGame(WHITE_PLAYER);
+      this.endGame(opponent);
     }
   }, 1000);
 
-  startPlayerOneTimer = () => setInterval(() => {
+  startPlayerOneTimer = opponent => setInterval(() => {
     let { playerOneTime } = this.state;
     playerOneTime -= 1;
     this.setState({ playerOneTime });
     if (playerOneTime <= 0) {
-      this.endGame(BLACK_PLAYER);
+      this.endGame(opponent);
     }
-  }, 1000);
+  }, 1000)
 
-  flipTimer = () => {
-    const { currentPlayer } = this.state;
-    if (currentPlayer === WHITE_PLAYER) {
-      clearInterval(this.playerOneIntervalId);
-      this.playerTwoIntervalId = this.startPlayerTwoTimer();
-    } else {
-      clearInterval(this.playerTwoIntervalId);
-      this.playerOneIntervalId = this.startPlayerOneTimer();
+  resetTimers = () => {
+    this.clearTimers();
+    const { currentPlayer, playerColor } = this.state;
+    if (currentPlayer === BLACK_PLAYER) {
+      if (playerColor === BLACK_PLAYER) {
+        this.playerOneIntervalId = this.startPlayerOneTimer(WHITE_PLAYER);
+      } else {
+        this.playerTwoIntervalId = this.startPlayerTwoTimer(WHITE_PLAYER);
+      }
+    } else if (currentPlayer === WHITE_PLAYER) {
+      if (playerColor === WHITE_PLAYER) {
+        this.playerOneIntervalId = this.startPlayerOneTimer(BLACK_PLAYER);
+      } else {
+        this.playerTwoIntervalId = this.startPlayerTwoTimer(BLACK_PLAYER);
+      }
     }
   };
 
@@ -139,7 +155,7 @@ export default class ChessGame extends React.Component {
     const board = this.chess.board();
 
     const currentPlayer = this.chess.turn();
-    receiveGameData(({ game }) => {
+    receiveGameData(({ game, time }) => {
       let { playerColor, gameReady } = this.state;
       if (!playerColor && !game.player2) {
         playerColor = game.player1.color;
@@ -150,22 +166,16 @@ export default class ChessGame extends React.Component {
       if (game.player1 && game.player2) {
         gameReady = true;
       }
+      const { playerOneTime, playerTwoTime } = time;
       this.setState(Object.assign({}, INIT_STATE, {
-        board, currentPlayer, playerColor, gameReady,
+        board, currentPlayer, playerColor, gameReady, playerOneTime, playerTwoTime,
       }));
     });
   }
 
   movePiece = (move) => {
-    this.chess.move(move);
+    this.clearTimers();
     sendMove(move);
-    this.updateBoardState();
-    if (this.chess.history().length > 1) {
-      this.flipTimer();
-      if (this.chess.game_over()) {
-        this.handleGameOver();
-      }
-    }
   }
 
   updateBoardState = () => {

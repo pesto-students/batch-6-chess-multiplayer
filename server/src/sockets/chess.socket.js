@@ -19,17 +19,20 @@ const chessSocket = (server) => {
   const io = IO(server);
   io.on('connection', (socket) => {
     const game = games.findGame(socket.id);
+    const initTime = game.getTime();
     socket.game = game;
     if (game.player2) {
       const opponent = assignOpponentSocket(socket.game, socket.id);
-      io.to(opponent.socketId).emit('gameData', { game });
+      io.to(opponent.socketId).emit('gameData', { game, time: initTime });
     }
 
-    socket.emit('gameData', { game });
+    socket.emit('gameData', { game, time: initTime });
 
     socket.on('pieceMoved', (moveObj) => {
       const opponent = assignOpponentSocket(socket.game, socket.id);
-      io.to(opponent.socketId).emit('movePiece', moveObj);
+      const curTime = game.flipTimer();
+      io.to(opponent.socketId).emit('movePiece', { moveObj, time: curTime });
+      socket.emit('movePiece', { moveObj, time: curTime });
     });
 
     socket.on('disconnect', () => {
