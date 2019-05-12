@@ -5,6 +5,7 @@ import ChessGame from './ChessGame';
 import ChessBoard from '../chess-board/ChessBoard';
 import GameOverOverLay from '../game-over-overlay/GameOverOverlay';
 import Timer from '../timer/Timer';
+import Loader from '../ui/loader/Loader';
 
 
 const chess = new Chess();
@@ -16,9 +17,20 @@ describe('<ChessGame />', () => {
     expect(componentWrapper.find(Component)).toHaveLength(length);
   };
 
+  it('Should render <Loader /> component if game is not ready', () => {
+    wrapper.setState({ gameReady: false });
+    componentExistsTest(wrapper, Loader, true, 1);
+  });
+
+  it('Should not render <ChessBoard /> component until game is ready', () => {
+    componentExistsTest(wrapper, ChessBoard, false, 0);
+  });
+
   it('Renders a <ChessBoard /> component', () => {
+    wrapper.setState({ gameReady: true });
     componentExistsTest(wrapper, ChessBoard, true, 1);
   });
+
 
   it('Should render render ChessBoard in correct orientation for player with black pieces', () => {
     wrapper.setState({ playerColor: 'b', board: chess.board() });
@@ -50,7 +62,7 @@ describe('<ChessGame />', () => {
   });
 
   it('Should render <GameOverOverLay /> overlay after game over', () => {
-    wrapper.setState({ isGameOver: true });
+    wrapper.setState({ isGameOver: true, chessBoardWidth: 1, chessBoardHeight: 2 });
     componentExistsTest(wrapper, GameOverOverLay, true, 1);
   });
 });
