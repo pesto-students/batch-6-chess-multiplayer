@@ -1,4 +1,39 @@
-#chess-game-container {    
+.chess-game-container {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+#chess-board-container {    
     display: block;
     position: relative;
+    align-self: center;
+}
+
+.chess-game-container .top-player, .chess-game-container .bottom-player {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f88c22;
+    border: 1px solid black;
+    border-radius: 6px;
+}
+
+.player-name, .player-rating{
+    padding: 5px;
+    font-weight: bold;
+}
+
+.player-name {
+    text-transform: capitalize;
+}
+
+.player-rating {
+    text-decoration: underline;
+}
+
+.player-time {
+    border: none;
+    font-weight: bold;
 }

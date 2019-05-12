@@ -213,11 +213,17 @@ export default class ChessGame extends React.Component {
     }
 
     return (
-      <div>
-        <Timer time={playerTwoTime} />
-        <div id="chess-game-container">
+      <div className="chess-game-container">
+        <div id="chess-board-container" ref={this.chessBoardContainerRef}>
+          <div className="top-player">
+            <div className="player-detail">
+              {/* TODO: update player names after server sends these details */}
+              <div className="player-name">John Doe</div>
+              <div className="player-rating">{playerTwoRating}</div>
+            </div>
+            <Timer time={playerTwoTime} classes="player-time" />
+          </div>
           <ChessBoard
-            chessBoardContainerRef={this.chessBoardContainerRef}
             calcPossibleMoves={this.calcPossibleMoves}
             movePiece={this.movePiece}
             squares={squares}
@@ -234,8 +240,14 @@ export default class ChessGame extends React.Component {
               height={chessBoardHeight}
             />
           )}
+          <div className="bottom-player">
+            <div className="player-detail">
+              <div className="player-name">Jane Doe</div>
+              <div className="player-rating">{playerOneRating}</div>
+            </div>
+            <Timer time={playerOneTime} classes="player-time" />
+          </div>
         </div>
-        <Timer time={playerOneTime} />
       </div>
     );
   }
