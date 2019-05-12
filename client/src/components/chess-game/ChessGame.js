@@ -2,6 +2,7 @@ import React from 'react';
 import ChessJs from 'chess.js';
 import ChessBoard from '../chess-board/ChessBoard';
 import GameOverOverlay from '../game-over-overlay/GameOverOverlay';
+import Loader from '../ui/loader/Loader';
 import Timer from '../timer/Timer';
 import {
   BLACK_PLAYER, DEFAULT_GAME_TIME_SECS, WHITE_PLAYER, GAME_DRAW,
@@ -40,6 +41,7 @@ const INIT_STATE = {
   playerOneRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
   playerTwoRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
   winner: '',
+  gameReady: false,
 };
 
 export default class ChessGame extends React.Component {
@@ -55,10 +57,12 @@ export default class ChessGame extends React.Component {
 
   componentDidMount() {
     const chessBoardContainerNode = this.chessBoardContainerRef.current;
-    const {
-      offsetWidth: chessBoardWidth, offsetHeight: chessBoardHeight,
-    } = chessBoardContainerNode;
-    this.setState({ chessBoardWidth, chessBoardHeight });
+    if (chessBoardContainerNode) {
+      const {
+        offsetWidth: chessBoardWidth, offsetHeight: chessBoardHeight,
+      } = chessBoardContainerNode;
+      this.setState({ chessBoardWidth, chessBoardHeight });
+    }
     this.startGame();
   }
 
@@ -136,14 +140,19 @@ export default class ChessGame extends React.Component {
 
     const currentPlayer = this.chess.turn();
     receiveGameData(({ game }) => {
-      let { playerColor } = this.state;
+      let { playerColor, gameReady } = this.state;
       if (!playerColor && !game.player2) {
         playerColor = game.player1.color;
       }
       if (!playerColor && game.player2) {
         playerColor = game.player2.color;
       }
-      this.setState(Object.assign({}, INIT_STATE, { board, currentPlayer, playerColor }));
+      if (game.player1 && game.player2) {
+        gameReady = true;
+      }
+      this.setState(Object.assign({}, INIT_STATE, {
+        board, currentPlayer, playerColor, gameReady,
+      }));
     });
   }
 
@@ -170,7 +179,7 @@ export default class ChessGame extends React.Component {
   render() {
     const {
       playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneRating,
-      playerTwoRating, winner, chessBoardWidth, chessBoardHeight,
+      playerTwoRating, winner, chessBoardWidth, chessBoardHeight, gameReady,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
@@ -179,6 +188,11 @@ export default class ChessGame extends React.Component {
       board = chessBoardData.newBoard;
       squares = chessBoardData.newSquares;
     }
+
+    if (!gameReady) {
+      return <Loader height={100} width={100} />;
+    }
+
     return (
       <>
         <Timer time={playerTwoTime} />

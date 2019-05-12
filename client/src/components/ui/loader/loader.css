@@ -1,0 +1,9 @@
+.loader {
+  position: fixed;
+  left: 45%;
+  top: 35%;
+}
+
+.loader-caption{
+  margin: 0 0 0 -30px;
+}
