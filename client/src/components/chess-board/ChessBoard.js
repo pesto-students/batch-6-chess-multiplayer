@@ -83,12 +83,12 @@ class ChessBoard extends PureComponent {
 
   render() {
     const {
-      chessBoardContainerRef, playerColor, squares, board,
+      playerColor, squares, board,
     } = this.props;
     const { showPromotion } = this.state;
     const promotionDisplay = showPromotion ? 'block' : 'none';
     return (
-      <div ref={chessBoardContainerRef} className="chess-board">
+      <div className="chess-board">
         {this.generateGrid(squares, board, playerColor)}
         <div className="promotion-wrapper" style={{ display: promotionDisplay }}>
           <PawnPromotion onSelect={this.makePromotionMove} pieceColor={playerColor} />
@@ -104,13 +104,11 @@ ChessBoard.propTypes = {
   movePiece: PropTypes.func.isRequired,
   playerColor: PropTypes.string.isRequired,
   squares: PropTypes.array,
-  chessBoardContainerRef: PropTypes.object,
 };
 
 ChessBoard.defaultProps = {
   board: [],
   squares: [],
-  chessBoardContainerRef: {},
 };
 
 export default ChessBoard;
