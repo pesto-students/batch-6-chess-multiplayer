@@ -27,7 +27,7 @@ app.use('/auth', auth);
 app.use('/', router);
 app.get('/get-user', authMiddleware, userDataMiddleWare, (req, res) => {
   const { user = {} } = req;
-  res.json({ user });
+  res.json(user);
 });
 
 server

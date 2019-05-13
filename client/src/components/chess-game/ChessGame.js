@@ -213,7 +213,7 @@ export default class ChessGame extends React.Component {
     }
 
     return (
-      <>
+      <div>
         <Timer time={playerTwoTime} />
         <div id="chess-game-container">
           <ChessBoard
@@ -236,7 +236,7 @@ export default class ChessGame extends React.Component {
           )}
         </div>
         <Timer time={playerOneTime} />
-      </>
+      </div>
     );
   }
 }

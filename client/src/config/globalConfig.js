@@ -6,4 +6,6 @@ const {
 
 export default {
   serverUrl: `${serverHost}:${serverPort}`,
+  loginRoute: '/',
+  dashboardRoute: '/dashboard',
 };

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 import Config from '../config/globalConfig';
 
 const authEndpoint = `${Config.serverUrl}/auth/login`;
@@ -34,7 +35,16 @@ const auth = {
   },
 
   isAuthenticated() {
-    return localStorage.getItem('jwt');
+    const token = jwt.decode(localStorage.getItem('jwt'));
+    if (token) {
+      const { exp: expInSecs } = token;
+      const expiryTimeMs = parseInt(expInSecs, 10) * 1000;
+      const currentTimeMs = Date.now();
+      if (currentTimeMs < expiryTimeMs) {
+        return true;
+      }
+    }
+    return false;
   },
 };
 
