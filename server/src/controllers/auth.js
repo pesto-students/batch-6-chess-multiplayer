@@ -40,7 +40,7 @@ export const verifyGoogleToken = async (token) => {
   }
 
   if (userId) {
-    const jwtToken = jwtUtil.generateJWT({ id: userId }, { expiresIn: '1d' });
+    const jwtToken = jwtUtil.generateAuthToken({ id: userId });
     return { accessToken: jwtToken };
   }
   return {};
@@ -64,7 +64,7 @@ export const verifyFBToken = async (accessToken) => {
     }
 
     if (userId) {
-      const jwtToken = jwtUtil.generateJWT({ id: userId }, { expiresIn: '1d' });
+      const jwtToken = jwtUtil.generateAuthToken({ id: userId });
       return { accessToken: jwtToken };
     }
     return {};
