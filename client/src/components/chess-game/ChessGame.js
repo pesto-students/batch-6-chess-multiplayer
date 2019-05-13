@@ -56,13 +56,6 @@ export default class ChessGame extends React.Component {
   }
 
   componentDidMount() {
-    const chessBoardContainerNode = this.chessBoardContainerRef.current;
-    if (chessBoardContainerNode) {
-      const {
-        offsetWidth: chessBoardWidth, offsetHeight: chessBoardHeight,
-      } = chessBoardContainerNode;
-      this.setState({ chessBoardWidth, chessBoardHeight });
-    }
     this.startGame();
     receiveMove(moveData => this.onMoveReceived(moveData));
   }
@@ -95,8 +88,19 @@ export default class ChessGame extends React.Component {
   endGame = (player = GAME_DRAW) => {
     this.clearTimers();
     disconnect();
+    this.updateBoardDimensions();
     this.setState({ isGameOver: true, winner: player });
   };
+
+  updateBoardDimensions = () => {
+    const chessBoardContainerNode = this.chessBoardContainerRef.current;
+    if (chessBoardContainerNode) {
+      const {
+        offsetWidth: chessBoardWidth, offsetHeight: chessBoardHeight,
+      } = chessBoardContainerNode;
+      this.setState({ chessBoardWidth, chessBoardHeight });
+    }
+  }
 
   handleGameOver = () => {
     if (this.chess.in_checkmate()) {
