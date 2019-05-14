@@ -20,7 +20,7 @@ const disconnectPlayers = (socket, io) => {
     io.to(opponent.socketId).emit('opponentDisconnected');
   }
   return games.removeGame(socket.id);
-}
+};
 
 const chessSocket = (server) => {
   const io = IO(server);
