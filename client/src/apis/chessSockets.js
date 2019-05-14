@@ -28,10 +28,19 @@ const disconnect = () => {
   socket.disconnect();
 };
 
+
+const opponentDisconnected = (cb) => {
+  socket.on('opponentDisconnected', (message) => {
+    socket.disconnect();
+    cb(message);
+  });
+};
+
 export {
   receiveGameData,
   createConnection,
   sendMove,
   receiveMove,
   disconnect,
+  opponentDisconnected,
 };

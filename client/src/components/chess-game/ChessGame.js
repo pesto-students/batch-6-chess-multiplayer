@@ -8,7 +8,7 @@ import {
   BLACK_PLAYER, WHITE_PLAYER, GAME_DRAW,
 } from '../../config/chess-game';
 import {
-  createConnection, receiveGameData, sendMove, receiveMove, disconnect,
+  createConnection, receiveGameData, sendMove, receiveMove, disconnect, opponentDisconnected,
 } from '../../apis/chessSockets';
 import './ChessGame.css';
 
@@ -57,7 +57,6 @@ export default class ChessGame extends React.Component {
 
   componentDidMount() {
     this.startGame();
-    receiveMove(moveData => this.onMoveReceived(moveData));
   }
 
   componentWillUnmount() {
@@ -112,7 +111,7 @@ export default class ChessGame extends React.Component {
     || this.chess.in_threefold_repetition();
 
     if (isDraw) {
-      this.endGame(null);
+      this.endGame(GAME_DRAW);
     }
   };
 
@@ -159,6 +158,8 @@ export default class ChessGame extends React.Component {
     const board = this.chess.board();
 
     const currentPlayer = this.chess.turn();
+    this.setState(Object.assign({}, INIT_STATE));
+    receiveMove(moveData => this.onMoveReceived(moveData));
     receiveGameData(({ game, time }) => {
       let { playerColor, gameReady } = this.state;
       if (!playerColor && !game.player2) {
@@ -174,6 +175,11 @@ export default class ChessGame extends React.Component {
       this.setState(Object.assign({}, INIT_STATE, {
         board, currentPlayer, playerColor, gameReady, playerOneTime, playerTwoTime,
       }));
+    });
+    opponentDisconnected(() => {
+      const { playerColor } = this.state;
+      this.endGame(playerColor);
+      disconnect();
     });
   }
 
@@ -235,8 +241,8 @@ export default class ChessGame extends React.Component {
               playerOneRating={playerOneRating}
               playerTwoRating={playerTwoRating}
               winner={winner}
-              startGame={this.startGame}
               width={chessBoardWidth}
+              startGame={this.startGame}
               height={chessBoardHeight}
             />
           )}
