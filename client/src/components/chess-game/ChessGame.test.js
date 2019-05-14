@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Chess } from 'chess.js';
 import ChessGame from './ChessGame';
 import ChessBoard from '../chess-board/ChessBoard';
@@ -10,7 +10,7 @@ import Loader from '../ui/loader/Loader';
 
 const chess = new Chess();
 describe('<ChessGame />', () => {
-  const wrapper = mount(<ChessGame />);
+  const wrapper = shallow(<ChessGame />);
 
   const componentExistsTest = (componentWrapper, Component, exists, length) => {
     expect(componentWrapper.exists(Component)).toBe(exists);
