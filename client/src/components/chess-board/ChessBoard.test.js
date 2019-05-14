@@ -47,16 +47,17 @@ describe('<ChessBoard />', () => {
         movePiece={movePiece}
         squares={squares}
         board={board}
+        playerColor={WHITE_PLAYER}
       />,
     );
     const { handleSquareClick } = wrapper.instance();
     const testBoardState = (nextGridPosition, prevSelectValidTouch) => {
-      handleSquareClick(nextGridPosition);
+      handleSquareClick(nextGridPosition, WHITE_PLAYER);
       expect(wrapper.state('prevSelectValidTouch')).toBe(prevSelectValidTouch);
     };
 
     test('should change "prevSelectValidTouch"', () => {
-      handleSquareClick('e4');
+      handleSquareClick('e4', WHITE_PLAYER);
       expect(wrapper.state('prevSelectValidTouch')).toBe(true);
     });
 
