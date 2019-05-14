@@ -5,22 +5,22 @@ import { assignOpponentSocket, Games } from './socket.utils';
 
 const games = new Games();
 
-const removePlayer2 = (socket) => {
-  const { player1 } = socket.game;
-  const { player2 } = socket.game;
-  if (socket.game.inPlay && socket.id === player1.socketId) {
-    socket.game.player1 = Object.assign({}, player2);
-  }
-  socket.game.player2 = {};
-  socket.game.inPlay = false;
-};
-
 const emitValidMove = (moveObj, socket, io, game) => {
   const opponent = assignOpponentSocket(socket.game, socket.id);
   const curTime = game.flipTimer();
-  io.to(opponent.socketId).emit('movePiece', { moveObj, time: curTime });
   socket.emit('movePiece', { moveObj, time: curTime });
+  if (opponent) {
+    io.to(opponent.socketId).emit('movePiece', { moveObj, time: curTime });
+  }
 };
+
+const disconnectPlayers = (socket, io) => {
+  const opponent = assignOpponentSocket(socket.game, socket.id);
+  if (opponent) {
+    io.to(opponent.socketId).emit('opponentDisconnected');
+  }
+  return games.removeGame(socket.id);
+}
 
 const chessSocket = (server) => {
   const io = IO(server);
@@ -31,7 +31,9 @@ const chessSocket = (server) => {
     socket.playerInfo = game.inPlay ? game.player2 : game.player1;
     if (game.player2) {
       const opponent = assignOpponentSocket(socket.game, socket.id);
-      io.to(opponent.socketId).emit('gameData', { game, time: initTime });
+      if (opponent) {
+        io.to(opponent.socketId).emit('gameData', { game, time: initTime });
+      }
     }
 
     socket.emit('gameData', { game, time: initTime });
@@ -44,7 +46,9 @@ const chessSocket = (server) => {
         : cb({ validMove: false, playerColor: color });
     });
 
-    socket.on('disconnect', () => (!socket.game.inPlay ? games.removeGame(socket.id) : removePlayer2(socket)));
+    socket.on('disconnect', () => {
+      disconnectPlayers(socket, io);
+    });
   });
 };
 
