@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
@@ -63,6 +64,12 @@ export default class MenuBar extends Component {
     return <Avatar src={picture} />;
   }
 
+  renderLinkMenuItem = (routePath, linkName) => (
+    <MenuItem onClick={this.handleClose}>
+      <Link to={routePath}>{linkName}</Link>
+    </MenuItem>
+  )
+
   render() {
     const { loggedIn, user, anchorEl } = this.state;
     const open = Boolean(anchorEl);
@@ -90,6 +97,8 @@ export default class MenuBar extends Component {
                   open={open}
                   onClose={this.handleClose}
                 >
+                  {this.renderLinkMenuItem(config.dashboardRoute, 'Dashboard')}
+                  {this.renderLinkMenuItem(config.leaderboardRoute, 'Leaderboard')}
                   <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
                 </Menu>
               </div>

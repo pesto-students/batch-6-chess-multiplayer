@@ -6,6 +6,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import Login from './components/login/Login';
 import Leaderboard from './components/leaderboard/Leaderboard';
 import MenuBar from './components/menu-bar/MenuBar';
+import config from './config/globalConfig';
 
 function App() {
   return (
@@ -13,9 +14,9 @@ function App() {
       <Route component={MenuBar} />
       <Switch>
         <Route path="/" exact component={Login} />
-        <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-        <ProtectedRoute path="/chess-game" exact component={ChessGame} />
-        <ProtectedRoute path="/leaderboard" exact component={Leaderboard} />
+        <ProtectedRoute path={config.dashboardRoute} exact component={Dashboard} />
+        <ProtectedRoute path={config.chessGameRoute} exact component={ChessGame} />
+        <ProtectedRoute path={config.leaderboardRoute} exact component={Leaderboard} />
         <Route path="*" component={() => '404 NOT FOUND'} />
       </Switch>
     </Router>

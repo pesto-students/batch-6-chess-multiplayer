@@ -7,4 +7,6 @@ export default {
   serverUrl: `${serverHost}`,
   loginRoute: '/',
   dashboardRoute: '/dashboard',
+  chessGameRoute: '/chess-game',
+  leaderboardRoute: '/leaderboard',
 };
