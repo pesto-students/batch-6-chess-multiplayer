@@ -48,7 +48,7 @@ export const verifyGoogleToken = async (token) => {
 
 export const verifyFBToken = async (accessToken) => {
   const url = `${Config.server.FACEBOOK_OAUTH_URL}${accessToken}`;
-  return axios.get(url).then((response) => {
+  return axios.get(url).then(async (response) => {
     const {
       last_name: familyName,
       first_name: givenName,
@@ -58,7 +58,7 @@ export const verifyFBToken = async (accessToken) => {
     const userData = {
       familyName, givenName, email, name,
     };
-    const { errorMessage, userId } = checkUser(userData);
+    const { errorMessage, userId } = await checkUser(userData);
     if (errorMessage) {
       return { errorMessage };
     }
