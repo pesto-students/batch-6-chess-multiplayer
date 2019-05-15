@@ -22,7 +22,7 @@
 
 .player-name, .player-rating{
     padding: 5px;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .player-name {
@@ -35,5 +35,5 @@
 
 .player-time {
     border: none;
-    font-weight: bold;
+    font-weight: normal;
 }
