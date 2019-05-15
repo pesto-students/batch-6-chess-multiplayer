@@ -1,5 +1,6 @@
 import React from 'react';
 import ChessJs from 'chess.js';
+import { Prompt } from 'react-router-dom';
 import ChessBoard from '../chess-board/ChessBoard';
 import GameOverOverlay from '../game-over-overlay/GameOverOverlay';
 import Loader from '../ui/loader/Loader';
@@ -46,6 +47,7 @@ const INIT_STATE = {
   },
   winner: '',
   gameReady: false,
+  isBlocking: true,
 };
 
 export default class ChessGame extends React.Component {
@@ -92,7 +94,7 @@ export default class ChessGame extends React.Component {
     this.clearTimers();
     disconnect();
     this.updateBoardDimensions();
-    this.setState({ isGameOver: true, winner: player });
+    this.setState({ isGameOver: true, winner: player, isBlocking: false });
   };
 
   updateBoardDimensions = () => {
@@ -160,7 +162,6 @@ export default class ChessGame extends React.Component {
     this.chess = new Chess();
     this.squares = this.chess.SQUARES;
     const board = this.chess.board();
-
     const currentPlayer = this.chess.turn();
     this.setState(Object.assign({}, INIT_STATE));
     receiveMove(moveData => this.onMoveReceived(moveData));
@@ -219,7 +220,7 @@ export default class ChessGame extends React.Component {
   render() {
     const {
       playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneInfo,
-      playerTwoInfo, winner, chessBoardWidth, chessBoardHeight, gameReady,
+      playerTwoInfo, winner, chessBoardWidth, chessBoardHeight, gameReady, isBlocking,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
@@ -233,15 +234,23 @@ export default class ChessGame extends React.Component {
       return <Loader height={100} width={100} />;
     }
 
+    const PlayerInfo = ({ name, rating }) => (
+      <div className="player-detail">
+        <div className="player-name">{name}</div>
+        <div className="player-rating">{rating}</div>
+      </div>
+    );
+
     return (
       <div className="chess-game-container">
+        <Prompt
+          when={isBlocking}
+          message={() => 'Are you sure you want to leave this page?\n\nPlease note you will lose the game if you leave!'
+          }
+        />
         <div id="chess-board-container" ref={this.chessBoardContainerRef}>
           <div className="top-player">
-            <div className="player-detail">
-              {/* TODO: update player names after server sends these details */}
-              <div className="player-name">{playerTwoInfo.name}</div>
-              <div className="player-rating">{playerTwoInfo.rating}</div>
-            </div>
+            {PlayerInfo(playerTwoInfo)}
             <Timer time={playerTwoTime} classes="player-time" />
           </div>
           <ChessBoard
@@ -262,10 +271,7 @@ export default class ChessGame extends React.Component {
             />
           )}
           <div className="bottom-player">
-            <div className="player-detail">
-              <div className="player-name">{playerOneInfo.name}</div>
-              <div className="player-rating">{playerOneInfo.rating}</div>
-            </div>
+            {PlayerInfo(playerOneInfo)}
             <Timer time={playerOneTime} classes="player-time" />
           </div>
         </div>
