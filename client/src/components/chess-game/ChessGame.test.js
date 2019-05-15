@@ -65,4 +65,8 @@ describe('<ChessGame />', () => {
     wrapper.setState({ isGameOver: true, chessBoardWidth: 1, chessBoardHeight: 2 });
     componentExistsTest(wrapper, GameOverOverLay, true, 1);
   });
+
+  afterAll(() => {
+    wrapper.unmount();
+  });
 });

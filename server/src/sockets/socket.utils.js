@@ -1,9 +1,13 @@
 import { WHITE_PLAYER, BLACK_PLAYER, DEFAULT_TIME } from '../config/gameConfig';
 
 class Game {
-  constructor(socketId) {
+  constructor(socket) {
     this.player1 = {
-      socketId,
+      socketId: socket.id,
+      user: {
+        name: socket.user.name,
+        rating: socket.user.rating,
+      },
       color: WHITE_PLAYER,
     };
     this.inPlay = false;
@@ -16,9 +20,13 @@ class Game {
     this.currentPlayer = WHITE_PLAYER;
   }
 
-  addPlayer2(socketId) {
+  addPlayer2(socket) {
     this.player2 = {
-      socketId,
+      socketId: socket.id,
+      user: {
+        name: socket.user.name,
+        rating: socket.user.rating,
+      },
       color: BLACK_PLAYER,
     };
     this.inPlay = true;
@@ -68,8 +76,8 @@ class Games {
     this.live = [];
   }
 
-  addGame(socketId) {
-    const game = new Game(socketId);
+  addGame(socket) {
+    const game = new Game(socket);
     this.live.push(game);
     return game;
   }
@@ -78,15 +86,15 @@ class Games {
     return this.live.find(x => !x.inPlay);
   }
 
-  findGame(socketId) {
+  findGame(socket) {
     let game = '';
     const { live } = this;
     if (live.length === 0) {
-      game = this.addGame(socketId);
+      game = this.addGame(socket);
     } else {
       game = this.findIdleGame()
-        ? this.findIdleGame().addPlayer2(socketId)
-        : this.addGame(socketId);
+        ? this.findIdleGame().addPlayer2(socket)
+        : this.addGame(socket);
     }
     return game;
   }
