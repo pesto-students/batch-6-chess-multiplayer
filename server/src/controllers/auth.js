@@ -54,9 +54,10 @@ export const verifyFBToken = async (accessToken) => {
       first_name: givenName,
       email,
       name,
+      picture: { data: { url: picture = '' } = {} },
     } = response.data;
     const userData = {
-      familyName, givenName, email, name,
+      familyName, givenName, email, name, picture,
     };
     const { errorMessage, userId } = await checkUser(userData);
     if (errorMessage) {
