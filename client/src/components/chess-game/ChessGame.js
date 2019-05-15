@@ -29,8 +29,6 @@ const blackPlayerBoard = (squares, board) => {
   };
 };
 
-const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
 const INIT_STATE = {
   board: [],
   playerColor: '',
@@ -38,8 +36,14 @@ const INIT_STATE = {
   playerOneTime: 0,
   playerTwoTime: 0,
   isGameOver: false,
-  playerOneRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
-  playerTwoRating: getRandomNumber(1400, 1500), // TODO: Change after login is implemented
+  playerOneInfo: {
+    name: null,
+    rating: 0,
+  },
+  playerTwoInfo: {
+    name: null,
+    rating: 0,
+  },
   winner: '',
   gameReady: false,
 };
@@ -161,7 +165,9 @@ export default class ChessGame extends React.Component {
     this.setState(Object.assign({}, INIT_STATE));
     receiveMove(moveData => this.onMoveReceived(moveData));
     receiveGameData(({ game, time }) => {
-      let { playerColor, gameReady } = this.state;
+      let {
+        playerColor, playerOneInfo, playerTwoInfo, gameReady,
+      } = this.state;
       if (!playerColor && !game.player2) {
         playerColor = game.player1.color;
       }
@@ -169,11 +175,20 @@ export default class ChessGame extends React.Component {
         playerColor = game.player2.color;
       }
       if (game.player1 && game.player2) {
+        playerOneInfo = playerColor === WHITE_PLAYER ? game.player1.user : game.player2.user;
+        playerTwoInfo = playerColor === WHITE_PLAYER ? game.player2.user : game.player1.user;
         gameReady = true;
       }
       const { playerOneTime, playerTwoTime } = time;
       this.setState(Object.assign({}, INIT_STATE, {
-        board, currentPlayer, playerColor, gameReady, playerOneTime, playerTwoTime,
+        board,
+        currentPlayer,
+        playerColor,
+        gameReady,
+        playerOneTime,
+        playerTwoTime,
+        playerOneInfo,
+        playerTwoInfo,
       }));
     });
     opponentDisconnected(() => {
@@ -203,8 +218,8 @@ export default class ChessGame extends React.Component {
 
   render() {
     const {
-      playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneRating,
-      playerTwoRating, winner, chessBoardWidth, chessBoardHeight, gameReady,
+      playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneInfo,
+      playerTwoInfo, winner, chessBoardWidth, chessBoardHeight, gameReady,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
@@ -224,8 +239,8 @@ export default class ChessGame extends React.Component {
           <div className="top-player">
             <div className="player-detail">
               {/* TODO: update player names after server sends these details */}
-              <div className="player-name">John Doe</div>
-              <div className="player-rating">{playerTwoRating}</div>
+              <div className="player-name">{playerTwoInfo.name}</div>
+              <div className="player-rating">{playerTwoInfo.rating}</div>
             </div>
             <Timer time={playerTwoTime} classes="player-time" />
           </div>
@@ -238,8 +253,8 @@ export default class ChessGame extends React.Component {
           />
           {isGameOver && (
             <GameOverOverlay
-              playerOneRating={playerOneRating}
-              playerTwoRating={playerTwoRating}
+              playerOneRating={playerOneInfo.rating}
+              playerTwoRating={playerTwoInfo.rating}
               winner={winner}
               width={chessBoardWidth}
               startGame={this.startGame}
@@ -248,8 +263,8 @@ export default class ChessGame extends React.Component {
           )}
           <div className="bottom-player">
             <div className="player-detail">
-              <div className="player-name">Jane Doe</div>
-              <div className="player-rating">{playerOneRating}</div>
+              <div className="player-name">{playerOneInfo.name}</div>
+              <div className="player-rating">{playerOneInfo.rating}</div>
             </div>
             <Timer time={playerOneTime} classes="player-time" />
           </div>
