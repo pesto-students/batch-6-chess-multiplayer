@@ -7,11 +7,12 @@ import config from '../../config/globalConfig';
 export default function Dashboard() {
   return (
     <div id="home-screen-wrapper">
-      <p>
+      <div className="dashboard-img" />
+      <div className="centered-dashboard-text">
         {'Click '}
         <Link to={config.chessGameRoute}>here</Link>
         { ' to play' }
-      </p>
+      </div>
     </div>
   );
 }
