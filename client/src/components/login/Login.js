@@ -29,7 +29,7 @@ const Login = (props) => {
 
   return (
     <div id="content">
-      <p>Multiplayer Chess</p>
+      <p>Online Chess</p>
       { errorMessage && <p>{errorMessage}</p> }
       <GoogleButton successCallback={successCallback} failureCallback={failureCallback} />
       <FacebookButton successCallback={successCallback} failureCallback={failureCallback} />
