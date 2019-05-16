@@ -18,8 +18,8 @@ describe('<ChessSquare />', () => {
 
   test('should render chess square with piece', () => {
     const wrapper = shallow(<ChessSquare isDark pieceType="p" pieceColor="b" gridPosition="c8" highlight={false} handleSelect={fn} />);
-    expect(wrapper.props().children.type).toBe('img');
-    expect(wrapper.props().children.props.src).toBe('blackpawn.svg');
+    expect(wrapper.props().children[0].type).toBe('img');
+    expect(wrapper.props().children[0].props.src).toBe('blackpawn.svg');
   });
 
   test('should render highlighted square', () => {

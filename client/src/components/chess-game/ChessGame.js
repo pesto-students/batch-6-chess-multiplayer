@@ -48,6 +48,7 @@ const INIT_STATE = {
   winner: '',
   gameReady: false,
   isBlocking: true,
+  lastMove: {},
 };
 
 export default class ChessGame extends React.Component {
@@ -78,7 +79,7 @@ export default class ChessGame extends React.Component {
     const { playerOneTime: serverPlayerOne, playerTwoTime: serverPlayerTwo } = time;
     const playerOneTime = playerColor === WHITE_PLAYER ? serverPlayerOne : serverPlayerTwo;
     const playerTwoTime = playerColor === WHITE_PLAYER ? serverPlayerTwo : serverPlayerOne;
-    this.setState({ playerOneTime, playerTwoTime });
+    this.setState({ playerOneTime, playerTwoTime, lastMove: moveObj });
     if (this.chess.game_over()) {
       this.handleGameOver();
     }
@@ -221,6 +222,7 @@ export default class ChessGame extends React.Component {
     const {
       playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneInfo,
       playerTwoInfo, winner, chessBoardWidth, chessBoardHeight, gameReady, isBlocking,
+      lastMove,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
@@ -259,6 +261,7 @@ export default class ChessGame extends React.Component {
             squares={squares}
             board={board}
             playerColor={playerColor}
+            prevMove={lastMove}
           />
           {isGameOver && (
             <GameOverOverlay

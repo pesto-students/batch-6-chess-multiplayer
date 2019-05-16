@@ -14,7 +14,7 @@ class ChessSquare extends PureComponent {
   render() {
     let piece = '';
     const {
-      isDark, highlight, pieceType, pieceColor, gridPosition,
+      isDark, highlight, pieceType, pieceColor, gridPosition, isPrevMoveSq,
     } = this.props;
     const key = `${pieceColor}${pieceType}`;
     if (Object.hasOwnProperty.call(chessPieces, key)) {
@@ -33,6 +33,7 @@ class ChessSquare extends PureComponent {
         className={squareClass}
       >
         {piece ? <img src={piece} alt="chess_piece" /> : null}
+        {isPrevMoveSq ? <div className="inner-square" /> : null}
       </div>
     );
   }
@@ -45,6 +46,7 @@ ChessSquare.propTypes = {
   isDark: PropTypes.bool,
   pieceType: PropTypes.string,
   pieceColor: PropTypes.string,
+  isPrevMoveSq: PropTypes.bool,
 };
 
 ChessSquare.defaultProps = {
@@ -52,6 +54,7 @@ ChessSquare.defaultProps = {
   isDark: false,
   pieceType: null,
   pieceColor: null,
+  isPrevMoveSq: false,
 };
 
 export default ChessSquare;

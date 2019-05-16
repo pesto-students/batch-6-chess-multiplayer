@@ -19,6 +19,7 @@ class ChessBoard extends PureComponent {
       return null;
     }
     const { possibleMoves } = this.state;
+    const { prevMove } = this.props;
     const isValidPosition = matchPossibleMoves(possibleMoves);
     return squares.map((position, index) => {
       const row = parseInt(index / 8, 10);
@@ -26,6 +27,7 @@ class ChessBoard extends PureComponent {
       const isDark = row % 2 === 0 ? col % 2 === 1 : col % 2 === 0;
       const { type = null, color = null } = board[row][col] || {};
       const highlight = isValidPosition(position);
+      const isPrevMoveSq = prevMove.from === position || prevMove.to === position;
 
       return (
         <ChessSquare
@@ -37,6 +39,7 @@ class ChessBoard extends PureComponent {
           pieceColor={color}
           highlight={highlight}
           playerColor={playerColor}
+          isPrevMoveSq={isPrevMoveSq}
         />
       );
     });
@@ -104,11 +107,13 @@ ChessBoard.propTypes = {
   movePiece: PropTypes.func.isRequired,
   playerColor: PropTypes.string.isRequired,
   squares: PropTypes.array,
+  prevMove: PropTypes.object,
 };
 
 ChessBoard.defaultProps = {
   board: [],
   squares: [],
+  prevMove: {},
 };
 
 export default ChessBoard;
