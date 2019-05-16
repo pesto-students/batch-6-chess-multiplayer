@@ -11,3 +11,19 @@
     align-items: center;
     z-index: 100;
 }
+
+.centered-container {
+    display: flex;
+    flex-direction: column;
+}
+
+span.danger {
+    color: red;
+    font-weight: bold;
+}
+
+span.success {
+    color: limegreen;
+    font-weight: bold;
+}
+

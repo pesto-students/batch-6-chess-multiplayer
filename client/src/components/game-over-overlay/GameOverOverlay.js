@@ -1,9 +1,9 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { BLACK_PLAYER, WHITE_PLAYER } from '../../config/chess-game';
+import { Button } from '@material-ui/core';
 import API from '../../apis/chessGameApi';
 import './GameOverOverlay.css';
+import { WHITE_PLAYER, BLACK_PLAYER } from '../../config/chess-game';
 
 const ratingDiffString = ratingDiff => (ratingDiff < 0 ? `${ratingDiff}` : `+${ratingDiff}`);
 
@@ -24,14 +24,19 @@ export default class GameOver extends PureComponent {
   }
 
   updateRating = () => {
-    const { playerOneRating, playerTwoRating, winner } = this.props;
+    const {
+      playerOneRating, playerTwoRating, winner, playerColor,
+    } = this.props;
     this.setState({ isLoading: true });
-    API.getRating({ playerOneRating, playerTwoRating, winner })
+    const serverPlayerOne = playerColor === WHITE_PLAYER ? playerOneRating : playerTwoRating;
+    const serverPlayerTwo = playerColor === WHITE_PLAYER ? playerTwoRating : playerOneRating;
+    API.getRating({ playerOneRating: serverPlayerOne, playerTwoRating: serverPlayerTwo, winner })
       .then((response) => {
         const {
-          isError, error, playerOneNewRating, playerTwoNewRating,
+          isError, error, playerOneNewRating: sponr, playerTwoNewRating: sptnr,
         } = response;
-
+        const playerOneNewRating = playerColor === WHITE_PLAYER ? sponr : sptnr;
+        const playerTwoNewRating = playerColor === WHITE_PLAYER ? sptnr : sponr;
         let stateObj = { isLoading: false };
         if (isError) {
           stateObj = { ...stateObj, isError, errMessage: error.message };
@@ -42,12 +47,12 @@ export default class GameOver extends PureComponent {
       });
   }
 
-  getWinnerMessage = (winner) => {
-    let message = 'Draw !!';
-    if (winner === WHITE_PLAYER) {
-      message = 'White player wins !!';
-    } else if (winner === BLACK_PLAYER) {
-      message = 'Black player wins !!';
+  getWinnerMessage = (winner, player) => {
+    let message = 'Draw match! You got the moves.';
+    if (winner === player) {
+      message = 'Well played, the game is all yours!';
+    } else if (winner === WHITE_PLAYER || winner === BLACK_PLAYER) {
+      message = 'Never Mind, you can always start a new game.';
     }
     return message;
   }
@@ -55,24 +60,45 @@ export default class GameOver extends PureComponent {
   render() {
     const {
       playerOneRating, playerTwoRating, winner, startGame,
-      width, height,
+      width, height, playerColor, playerOneName, playerTwoName,
     } = this.props;
     const {
       playerOneNewRating, playerTwoNewRating, isLoading, isError, errMessage,
     } = this.state;
-    const message = this.getWinnerMessage(winner);
+    const message = this.getWinnerMessage(winner, playerColor);
     const pOneRatingDiffStr = ratingDiffString(playerOneNewRating - playerOneRating);
     const pTwoRatingDiffStr = ratingDiffString(playerTwoNewRating - playerTwoRating);
+    const pOneHighlightClass = pOneRatingDiffStr >= 0 ? 'success' : 'danger';
+    const pTwoHighlightClass = pTwoRatingDiffStr >= 0 ? 'success' : 'danger';
+
     return (
       <div id="game-over-overlay" style={{ width, height }}>
-        { isError && <p> {errMessage} </p>}
-        { (isLoading && !isError) && <p>Loading...</p> }
+        { isError && (
+        <p>
+          {' '}
+          {errMessage}
+          {' '}
+        </p>
+        )}
+        { (isLoading && !isError) && <div className="centered-container">Loading…</div> }
         { (!isLoading && !isError) && (
-          <div>
+          <div className="centered-container">
             <p>{message}</p>
-            <p>Player one rating: {playerOneNewRating}, {pOneRatingDiffStr}</p>
-            <p>Player two rating: {playerTwoNewRating}, {pTwoRatingDiffStr}</p>
-            <button type="button" onClick={startGame}>Play Again</button>
+            <p>
+              {playerOneName}
+              {': '}
+              {playerOneNewRating}
+              {', '}
+              <span className={pOneHighlightClass}>{pOneRatingDiffStr}</span>
+            </p>
+            <p>
+              {playerTwoName}
+              {': '}
+              {playerTwoNewRating}
+              {', '}
+              <span className={pTwoHighlightClass}>{pTwoRatingDiffStr}</span>
+            </p>
+            <Button color="primary" variant="contained" onClick={startGame}>Play Again</Button>
           </div>
         )}
       </div>
@@ -83,6 +109,9 @@ export default class GameOver extends PureComponent {
 GameOver.propTypes = {
   playerOneRating: PropTypes.number.isRequired,
   playerTwoRating: PropTypes.number.isRequired,
+  playerColor: PropTypes.string.isRequired,
+  playerOneName: PropTypes.string.isRequired,
+  playerTwoName: PropTypes.string.isRequired,
   winner: PropTypes.string.isRequired,
   startGame: PropTypes.func.isRequired,
   width: PropTypes.number.isRequired,

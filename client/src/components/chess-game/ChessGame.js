@@ -97,11 +97,11 @@ export default class ChessGame extends React.Component {
     clearInterval(this.playerTwoIntervalId);
   };
 
-  endGame = (player = GAME_DRAW) => {
+  endGame = (winner = GAME_DRAW) => {
     this.clearTimers();
     disconnect();
     this.updateBoardDimensions();
-    this.setState({ isGameOver: true, winner: player, isBlocking: false });
+    this.setState({ isGameOver: true, winner, isBlocking: false });
   };
 
   updateBoardDimensions = () => {
@@ -117,7 +117,7 @@ export default class ChessGame extends React.Component {
   handleGameOver = () => {
     if (this.chess.in_checkmate()) {
       const { currentPlayer } = this.state;
-      this.endGame(currentPlayer);
+      this.endGame(currentPlayer === WHITE_PLAYER ? BLACK_PLAYER : WHITE_PLAYER);
     }
     const isDraw = this.chess.in_draw()
     || this.chess.in_stalemate()
@@ -275,14 +275,17 @@ export default class ChessGame extends React.Component {
                   prevMove={lastMove}
                 />
                 {isGameOver && (
-                <GameOverOverlay
-                  playerOneRating={playerOneInfo.rating}
-                  playerTwoRating={playerTwoInfo.rating}
-                  winner={winner}
-                  width={chessBoardWidth}
-                  startGame={this.startGame}
-                  height={chessBoardHeight}
-                />
+                  <GameOverOverlay
+                    playerOneRating={playerOneInfo.rating}
+                    playerTwoRating={playerTwoInfo.rating}
+                    winner={winner}
+                    width={chessBoardWidth}
+                    startGame={this.startGame}
+                    height={chessBoardHeight}
+                    playerColor={playerColor}
+                    playerOneName={playerOneInfo.name}
+                    playerTwoName={playerTwoInfo.name}
+                  />
                 )}
                 <div className="bottom-player">
                   {PlayerInfo(playerOneInfo)}
@@ -294,9 +297,7 @@ export default class ChessGame extends React.Component {
               <MoveHistory moves={moves} />
             </Grid>
           </Grid>
-
         </div>
-
       </div>
     );
   }
