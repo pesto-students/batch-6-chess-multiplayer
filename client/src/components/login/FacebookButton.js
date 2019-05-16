@@ -24,6 +24,7 @@ const FacebookButton = (props) => {
         appId={process.env.REACT_APP_FACEBOOK_APP_ID}
         callback={onSuccess}
         onFailure={onFailure}
+        disableMobileRedirect
         size="medium"
         icon="fa-facebook-f"
         version="3.3"
