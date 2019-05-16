@@ -8,6 +8,7 @@ describe('Games', () => {
   const socket = {
     id: '12345',
     user: {
+      email: 'magnus@carlsen.com',
       name: 'magnus',
       rating: 2889,
     },
@@ -28,7 +29,7 @@ describe('Games', () => {
   });
 
   describe('findIdleGame()', () => {
-    let idleGame = games.findIdleGame();
+    let idleGame = games.findIdleGame('email');
     test('should return an idle game from live games if an idle game exists', () => {
       expect(idleGame).toBeTruthy();
       expect(idleGame.isLive).toBeFalsy();
@@ -37,6 +38,7 @@ describe('Games', () => {
       const socket1 = {
         id: '12345',
         user: {
+          email: 'magnus@carlsen.com',
           name: 'magnus',
           rating: 2889,
         },
@@ -52,18 +54,21 @@ describe('Games', () => {
       {
         id: '123454',
         user: {
+          email: 'magnus@carlsen.com',
           name: 'magnus',
           rating: 2889,
         },
       }, {
         id: '123455',
         user: {
+          email: 'vishy@anand.com',
           name: 'anand',
           rating: 2887,
         },
       }, {
         id: '123456',
         user: {
+          email: 'hikaru@nakamura.com',
           name: 'nakamura',
           rating: 2789,
         },
@@ -92,6 +97,7 @@ describe('Games', () => {
     const newUser = {
       id: '123456',
       user: {
+        email: 'hikaru@nakamura.com',
         name: 'nakamura',
         rating: 2789,
       },
@@ -121,14 +127,18 @@ describe('opponentSocket()', () => {
   const player1 = {
     socketId: '12345',
     user: {
+      email: 'magnus@carlsen.com',
       name: 'magnus',
       rating: 2888,
     },
   };
   const player2 = {
     socketId: '123456',
-    user: 'caruana',
-    rating: 2861,
+    user: {
+      email: 'fabiano@caruana.com',
+      name: 'caruana',
+      rating: 2861,
+    },
   };
   const game = {
     player1,
