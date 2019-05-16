@@ -1,15 +1,18 @@
 import { WHITE_PLAYER, BLACK_PLAYER, DEFAULT_TIME } from '../config/gameConfig';
 
+function Player({ id, user }, color) {
+  this.socketId = id;
+  this.user = {
+    email: user.email,
+    name: user.name ? user.name : user.email,
+    rating: user.rating,
+  };
+  this.color = color;
+}
+
 class Game {
   constructor(socket) {
-    this.player1 = {
-      socketId: socket.id,
-      user: {
-        name: socket.user.name,
-        rating: socket.user.rating,
-      },
-      color: WHITE_PLAYER,
-    };
+    this.player1 = new Player(socket, WHITE_PLAYER);
     this.inPlay = false;
     this.timer = {
       playerOneIntervalId: null,
@@ -21,14 +24,7 @@ class Game {
   }
 
   addPlayer2(socket) {
-    this.player2 = {
-      socketId: socket.id,
-      user: {
-        name: socket.user.name,
-        rating: socket.user.rating,
-      },
-      color: BLACK_PLAYER,
-    };
+    this.player2 = new Player(socket, BLACK_PLAYER);
     this.inPlay = true;
     return this;
   }
@@ -82,8 +78,11 @@ class Games {
     return game;
   }
 
-  findIdleGame() {
-    return this.live.find(x => !x.inPlay);
+  findIdleGame(email) {
+    if (!email) {
+      return false;
+    }
+    return this.live.find(x => !x.inPlay && x.player1.user.email !== email);
   }
 
   findGame(socket) {
@@ -92,8 +91,8 @@ class Games {
     if (live.length === 0) {
       game = this.addGame(socket);
     } else {
-      game = this.findIdleGame()
-        ? this.findIdleGame().addPlayer2(socket)
+      game = this.findIdleGame(socket.user.email)
+        ? this.findIdleGame(socket.user.email).addPlayer2(socket)
         : this.addGame(socket);
     }
     return game;
