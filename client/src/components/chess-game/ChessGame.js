@@ -219,7 +219,7 @@ export default class ChessGame extends React.Component {
 
   render() {
     const {
-      playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneInfo,
+      playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneInfo, currentPlayer,
       playerTwoInfo, winner, chessBoardWidth, chessBoardHeight, gameReady, isBlocking,
     } = this.state;
     let { board } = this.state;
@@ -229,6 +229,8 @@ export default class ChessGame extends React.Component {
       board = chessBoardData.newBoard;
       squares = chessBoardData.newSquares;
     }
+    const isPlayerOneTurn = currentPlayer === playerColor;
+    const isPlayerTwoTurn = currentPlayer !== playerColor;
 
     if (!gameReady) {
       return <Loader height={100} width={100} />;
@@ -251,7 +253,7 @@ export default class ChessGame extends React.Component {
         <div id="chess-board-container" ref={this.chessBoardContainerRef}>
           <div className="top-player">
             {PlayerInfo(playerTwoInfo)}
-            <Timer time={playerTwoTime} classes="player-time" />
+            <Timer time={playerTwoTime} isActive={isPlayerTwoTurn} classes="player-time" />
           </div>
           <ChessBoard
             calcPossibleMoves={this.calcPossibleMoves}
@@ -272,7 +274,7 @@ export default class ChessGame extends React.Component {
           )}
           <div className="bottom-player">
             {PlayerInfo(playerOneInfo)}
-            <Timer time={playerOneTime} classes="player-time" />
+            <Timer time={playerOneTime} isActive={isPlayerOneTurn} classes="player-time" />
           </div>
         </div>
       </div>
