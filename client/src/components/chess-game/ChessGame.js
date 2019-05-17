@@ -81,6 +81,8 @@ export default class ChessGame extends React.Component {
     if (gameReady) {
       const winner = playerColor === WHITE_PLAYER ? BLACK_PLAYER : WHITE_PLAYER;
       gameOver(winner, true);
+    } else {
+      disconnect();
     }
   }
 
@@ -230,7 +232,7 @@ export default class ChessGame extends React.Component {
         this.updateBoardDimensions();
       }
       this.setState({
-        loadingNewRating: false, gameOverDetails, isGameOver,
+        loadingNewRating: false, gameOverDetails, isGameOver, isBlocking: false,
       }, disconnect);
     });
   }
@@ -238,7 +240,9 @@ export default class ChessGame extends React.Component {
   setErrorMessage = (message, cb = () => {}) => {
     this.updateBoardDimensions();
     this.clearTimers();
-    this.setState({ isError: true, errorMessage: message, isGameOver: true }, cb);
+    this.setState({
+      isError: true, errorMessage: message, isGameOver: true, isBlocking: false,
+    }, cb);
   }
 
   movePiece = (move) => {
