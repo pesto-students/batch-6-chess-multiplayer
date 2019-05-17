@@ -58,7 +58,7 @@ const chessSocket = (server) => {
       }
     }
 
-    socket.emit('gameData', { game, time: initTime });
+    socket.emit('gameData', { game, time: initTime, _playerColor: socket.playerInfo.color });
 
     socket.on('pieceMoved', (moveObj, cb) => {
       const { color } = socket.playerInfo;
@@ -69,7 +69,26 @@ const chessSocket = (server) => {
     });
 
     socket.on('disconnect', () => {
-      disconnectPlayers(socket, io);
+      const { game: { inPlay = false } } = socket;
+      if (inPlay) {
+        disconnectPlayers(socket, io);
+      }
+    });
+
+    socket.on('gameOver', async (winner, resign) => {
+      const { game: { inPlay = false } } = socket;
+      const rating = await socket.game.calcPlayersNewRating(winner);
+      rating.winner = winner;
+      if (inPlay) {
+        const opponent = assignOpponentSocket(socket.game, socket.id);
+        io.to(opponent.socketId).emit('receiveGameOver', rating);
+        if (resign) {
+          socket.disconnect(true);
+        } else {
+          socket.emit('receiveGameOver', rating);
+        }
+        games.removeGame(socket.id);
+      }
     });
   });
 };

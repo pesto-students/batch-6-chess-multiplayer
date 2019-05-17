@@ -43,6 +43,23 @@ const opponentDisconnected = (cb) => {
   });
 };
 
+const gameOver = (winner, resign = false) => {
+  socket.emit('gameOver', winner, resign);
+};
+
+const receiveGameOverData = (cb) => {
+  socket.on('receiveGameOver', (gameOverDetails) => {
+    cb(gameOverDetails);
+  });
+};
+
+const onDisconnect = (cb) => {
+  socket.on('disconnect', (message) => {
+    if (!message.match('server disconnect')) {
+      cb();
+    }
+  });
+};
 export {
   receiveGameData,
   createConnection,
@@ -50,4 +67,7 @@ export {
   receiveMove,
   disconnect,
   opponentDisconnected,
+  gameOver,
+  receiveGameOverData,
+  onDisconnect,
 };

@@ -12,6 +12,7 @@ import {
 } from '../../config/chess-game';
 import {
   createConnection, receiveGameData, sendMove, receiveMove, disconnect, opponentDisconnected,
+  gameOver, receiveGameOverData, onDisconnect,
 } from '../../apis/chessSockets';
 import './ChessGame.css';
 
@@ -52,6 +53,10 @@ const INIT_STATE = {
   isBlocking: true,
   lastMove: {},
   moves: [],
+  loadingNewRating: false,
+  gameOverDetails: {},
+  isError: false,
+  errorMessage: '',
 };
 
 export default class ChessGame extends React.Component {
@@ -63,6 +68,7 @@ export default class ChessGame extends React.Component {
     super(props);
     this.state = Object.assign({}, INIT_STATE);
     this.chessBoardContainerRef = React.createRef();
+    this.squares = (new Chess()).SQUARES;
   }
 
   componentDidMount() {
@@ -71,7 +77,11 @@ export default class ChessGame extends React.Component {
 
   componentWillUnmount() {
     this.clearTimers();
-    disconnect();
+    const { playerColor, gameReady } = this.state;
+    if (gameReady) {
+      const winner = playerColor === WHITE_PLAYER ? BLACK_PLAYER : WHITE_PLAYER;
+      gameOver(winner, true);
+    }
   }
 
 
@@ -97,11 +107,16 @@ export default class ChessGame extends React.Component {
     clearInterval(this.playerTwoIntervalId);
   };
 
-  endGame = (winner = GAME_DRAW) => {
+  endGame = (player = GAME_DRAW) => {
+    const { playerColor, currentPlayer } = this.state;
     this.clearTimers();
-    disconnect();
     this.updateBoardDimensions();
-    this.setState({ isGameOver: true, winner, isBlocking: false });
+    this.setState({
+      isGameOver: true, winner: player, isBlocking: false, loadingNewRating: true,
+    });
+    if (currentPlayer === playerColor) {
+      gameOver(player);
+    }
   };
 
   updateBoardDimensions = () => {
@@ -166,21 +181,18 @@ export default class ChessGame extends React.Component {
 
   startGame = () => {
     createConnection();
-    this.chess = new Chess();
-    this.squares = this.chess.SQUARES;
-    const board = this.chess.board();
-    const currentPlayer = this.chess.turn();
     this.setState(Object.assign({}, INIT_STATE));
     receiveMove(moveData => this.onMoveReceived(moveData));
-    receiveGameData(({ game, time }) => {
+    receiveGameData(({ game, time, _playerColor = '' }) => {
+      this.chess = new Chess();
+      const board = this.chess.board();
+      const currentPlayer = this.chess.turn();
       let {
         playerColor, playerOneInfo, playerTwoInfo, gameReady,
       } = this.state;
-      if (!playerColor && !game.player2) {
-        playerColor = game.player1.color;
-      }
-      if (!playerColor && game.player2) {
-        playerColor = game.player2.color;
+
+      if (_playerColor !== '') {
+        playerColor = _playerColor;
       }
       if (game.player1 && game.player2) {
         playerOneInfo = playerColor === WHITE_PLAYER ? game.player1.user : game.player2.user;
@@ -200,10 +212,33 @@ export default class ChessGame extends React.Component {
       }));
     });
     opponentDisconnected(() => {
-      const { playerColor } = this.state;
-      this.endGame(playerColor);
-      disconnect();
+      this.setErrorMessage('Opponent is facing network issues', disconnect);
     });
+
+    onDisconnect(() => {
+      const { isGameOver } = this.state;
+      if (!isGameOver) {
+        this.setErrorMessage('You are disconnected from game');
+      }
+    });
+
+    receiveGameOverData((gameOverDetails) => {
+      let { isGameOver } = this.state;
+      if (!isGameOver) {
+        isGameOver = true;
+        this.clearTimers();
+        this.updateBoardDimensions();
+      }
+      this.setState({
+        loadingNewRating: false, gameOverDetails, isGameOver,
+      }, disconnect);
+    });
+  }
+
+  setErrorMessage = (message, cb = () => {}) => {
+    this.updateBoardDimensions();
+    this.clearTimers();
+    this.setState({ isError: true, errorMessage: message, isGameOver: true }, cb);
   }
 
   movePiece = (move) => {
@@ -228,7 +263,7 @@ export default class ChessGame extends React.Component {
     const {
       playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneInfo, currentPlayer,
       playerTwoInfo, winner, chessBoardWidth, chessBoardHeight, gameReady, isBlocking,
-      lastMove, moves,
+      lastMove, moves, loadingNewRating, gameOverDetails, isError, errorMessage,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
@@ -276,15 +311,17 @@ export default class ChessGame extends React.Component {
                 />
                 {isGameOver && (
                   <GameOverOverlay
-                    playerOneRating={playerOneInfo.rating}
-                    playerTwoRating={playerTwoInfo.rating}
+                    isLoading={loadingNewRating}
+                    gameOverDetails={gameOverDetails}
+                    playerOneInfo={playerOneInfo}
+                    playerTwoInfo={playerTwoInfo}
+                    isError={isError}
+                    errMessage={errorMessage}
                     winner={winner}
                     width={chessBoardWidth}
                     startGame={this.startGame}
                     height={chessBoardHeight}
                     playerColor={playerColor}
-                    playerOneName={playerOneInfo.name}
-                    playerTwoName={playerTwoInfo.name}
                   />
                 )}
                 <div className="bottom-player">
