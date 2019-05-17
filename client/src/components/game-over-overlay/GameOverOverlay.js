@@ -35,15 +35,8 @@ export default class GameOver extends PureComponent {
 
     return (
       <div id="game-over-overlay" style={{ width, height }}>
-        { (isLoading && !isError) && <div className="centered-container">Loading…</div> }
-        {/* { isError && (
-          <p>
-            {' '}
-            {errMessage}
-            {' '}
-          </p>
-        )} */}
-        { (!isLoading && !isError) && (
+        { isLoading && <div className="centered-container">Loading…</div> }
+        { !isLoading && (
           <div className="centered-container">
             <p>{isError ? errMessage : message}</p>
             {!isError && (

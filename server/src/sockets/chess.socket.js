@@ -42,6 +42,9 @@ const chessSocket = (server) => {
   io.use(async (socket, next) => {
     const token = socket.handshake.headers['x-auth-token'];
     const userId = jwt.verifyToken(token);
+    if (!userId) {
+      next(new Error('authentication error'));
+    }
     socket.userId = userId;
     userDataMiddleware(socket, {}, next);
   });
