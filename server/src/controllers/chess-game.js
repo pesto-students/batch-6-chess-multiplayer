@@ -1,11 +1,4 @@
-import CGUtil from '../utils/chess-game-util';
 import User from '../models/user';
-
-const getRating = (req, res) => {
-  const { playerOneRating, playerTwoRating, winner } = req.query;
-  const newRating = CGUtil.calcRating(playerOneRating, playerTwoRating, winner);
-  res.json(newRating);
-};
 
 const leaderboard = (req, res) => {
   const query = User.find();
@@ -21,6 +14,5 @@ const leaderboard = (req, res) => {
 };
 
 export default {
-  getRating,
   leaderboard,
 };

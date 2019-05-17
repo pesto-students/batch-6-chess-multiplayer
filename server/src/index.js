@@ -24,11 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/auth', auth);
-app.use('/', router);
-app.get('/get-user', authMiddleware, userDataMiddleWare, (req, res) => {
-  const { user = {} } = req;
-  res.json(user);
-});
+app.use('/', authMiddleware, userDataMiddleWare, router);
 
 server
   .listen(port, () => log(`Example app listening on port ${port}!`))

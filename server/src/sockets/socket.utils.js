@@ -1,4 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 import { WHITE_PLAYER, BLACK_PLAYER, DEFAULT_TIME } from '../config/gameConfig';
+import User from '../models/user';
+import chessGameUtil from '../utils/chess-game-util';
 
 function Player({ id, user }, color) {
   this.socketId = id;
@@ -6,6 +9,7 @@ function Player({ id, user }, color) {
     email: user.email,
     name: user.name ? user.name : user.email,
     rating: user.rating,
+    userId: user._id,
   };
   this.color = color;
 }
@@ -21,6 +25,7 @@ class Game {
       playerTwoTime: DEFAULT_TIME,
     };
     this.currentPlayer = WHITE_PLAYER;
+    this.newRating = null;
   }
 
   addPlayer2(socket) {
@@ -65,6 +70,28 @@ class Game {
       playerTwoTime: this.timer.playerTwoTime,
     };
   }
+
+  async calcPlayersNewRating(winner) {
+    if (this.newRating === null) {
+      const { user: { userId: playerOneUserId = '' } = {} } = this.player1;
+      const { user: { userId: playerTwoUserId = '' } = {} } = this.player2;
+
+      const playerOne = await User.findById(playerOneUserId);
+      const playerTwo = await User.findById(playerTwoUserId);
+      const { rating: playerOneRating = 0 } = playerOne;
+      const { rating: playerTwoRating = 0 } = playerTwo;
+
+      const rating = chessGameUtil.calcRating(playerOneRating, playerTwoRating, winner);
+      const { playerOneNewRating, playerTwoNewRating } = rating;
+      playerOne.rating = playerOneNewRating;
+      await playerOne.save();
+      playerTwo.rating = playerTwoNewRating;
+      await playerTwo.save();
+
+      this.newRating = rating;
+    }
+    return this.newRating;
+  }
 }
 
 class Games {
@@ -103,11 +130,18 @@ class Games {
     if (live.length === 0 || !socketId) {
       return false;
     }
-    const gameIdx = live.findIndex(x => x.player1.socketId === socketId);
+    const gameIdx = live.findIndex((game) => {
+      const {
+        player1: { socketId: pOneSocketId = '' } = {},
+        player2: { socketId: pTwoSocketId = '' } = {},
+      } = game;
+      return (pOneSocketId === socketId || pTwoSocketId === socketId);
+    });
     if (gameIdx === -1) {
       return false;
     }
     const game = live.splice(gameIdx, 1)[0];
+    game.inPlay = false;
     game.clearBothTimers();
     return true;
   }
