@@ -80,8 +80,10 @@ const chessSocket = (server) => {
       const rating = await socket.game.calcPlayersNewRating(winner);
       rating.winner = winner;
       if (inPlay) {
-        const opponent = assignOpponentSocket(socket.game, socket.id);
-        io.to(opponent.socketId).emit('receiveGameOver', rating);
+        const { socketId: opponentSocketId = '' } = assignOpponentSocket(socket.game, socket.id);
+        if (opponentSocketId !== '') {
+          io.to(opponentSocketId).emit('receiveGameOver', rating);
+        }
         if (resign) {
           socket.disconnect(true);
         } else {
