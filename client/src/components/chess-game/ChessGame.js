@@ -1,10 +1,12 @@
 import React from 'react';
 import ChessJs from 'chess.js';
 import { Prompt } from 'react-router-dom';
+import Grid from '@material-ui/core/Grid';
 import ChessBoard from '../chess-board/ChessBoard';
 import GameOverOverlay from '../game-over-overlay/GameOverOverlay';
 import Loader from '../ui/loader/Loader';
 import Timer from '../timer/Timer';
+import MoveHistory from '../move-history/MoveHistory';
 import {
   BLACK_PLAYER, WHITE_PLAYER, GAME_DRAW,
 } from '../../config/chess-game';
@@ -49,6 +51,7 @@ const INIT_STATE = {
   gameReady: false,
   isBlocking: true,
   lastMove: {},
+  moves: [],
 };
 
 export default class ChessGame extends React.Component {
@@ -79,7 +82,10 @@ export default class ChessGame extends React.Component {
     const { playerOneTime: serverPlayerOne, playerTwoTime: serverPlayerTwo } = time;
     const playerOneTime = playerColor === WHITE_PLAYER ? serverPlayerOne : serverPlayerTwo;
     const playerTwoTime = playerColor === WHITE_PLAYER ? serverPlayerTwo : serverPlayerOne;
-    this.setState({ playerOneTime, playerTwoTime, lastMove: moveObj });
+    const newHistory = this.chess.history({ verbose: true });
+    this.setState({
+      playerOneTime, playerTwoTime, lastMove: moveObj, moves: [...newHistory],
+    });
     if (this.chess.game_over()) {
       this.handleGameOver();
     }
@@ -222,7 +228,7 @@ export default class ChessGame extends React.Component {
     const {
       playerColor, isGameOver, playerOneTime, playerTwoTime, playerOneInfo, currentPlayer,
       playerTwoInfo, winner, chessBoardWidth, chessBoardHeight, gameReady, isBlocking,
-      lastMove,
+      lastMove, moves,
     } = this.state;
     let { board } = this.state;
     let { squares } = this;
@@ -252,34 +258,45 @@ export default class ChessGame extends React.Component {
           message={() => 'Are you sure you want to leave this page?\n\nPlease note you will lose the game if you leave!'
           }
         />
-        <div id="chess-board-container" ref={this.chessBoardContainerRef}>
-          <div className="top-player">
-            {PlayerInfo(playerTwoInfo)}
-            <Timer time={playerTwoTime} isActive={isPlayerTwoTurn} classes="player-time" />
-          </div>
-          <ChessBoard
-            calcPossibleMoves={this.calcPossibleMoves}
-            movePiece={this.movePiece}
-            squares={squares}
-            board={board}
-            playerColor={playerColor}
-            prevMove={lastMove}
-          />
-          {isGameOver && (
-            <GameOverOverlay
-              playerOneRating={playerOneInfo.rating}
-              playerTwoRating={playerTwoInfo.rating}
-              winner={winner}
-              width={chessBoardWidth}
-              startGame={this.startGame}
-              height={chessBoardHeight}
-            />
-          )}
-          <div className="bottom-player">
-            {PlayerInfo(playerOneInfo)}
-            <Timer time={playerOneTime} isActive={isPlayerOneTurn} classes="player-time" />
-          </div>
+        <div>
+          <Grid container spacing={24}>
+            <Grid item xs={12} sm={12} md={6}>
+              <div id="chess-board-container" ref={this.chessBoardContainerRef}>
+                <div className="top-player">
+                  {PlayerInfo(playerTwoInfo)}
+                  <Timer time={playerTwoTime} isActive={isPlayerTwoTurn} classes="player-time" />
+                </div>
+                <ChessBoard
+                  calcPossibleMoves={this.calcPossibleMoves}
+                  movePiece={this.movePiece}
+                  squares={squares}
+                  board={board}
+                  playerColor={playerColor}
+                  prevMove={lastMove}
+                />
+                {isGameOver && (
+                <GameOverOverlay
+                  playerOneRating={playerOneInfo.rating}
+                  playerTwoRating={playerTwoInfo.rating}
+                  winner={winner}
+                  width={chessBoardWidth}
+                  startGame={this.startGame}
+                  height={chessBoardHeight}
+                />
+                )}
+                <div className="bottom-player">
+                  {PlayerInfo(playerOneInfo)}
+                  <Timer time={playerOneTime} isActive={isPlayerOneTurn} classes="player-time" />
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6}>
+              <MoveHistory moves={moves} />
+            </Grid>
+          </Grid>
+
         </div>
+
       </div>
     );
   }

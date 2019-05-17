@@ -1,0 +1,19 @@
+.move-history {
+  max-height: 60vh;
+  overflow-y: scroll;
+  overflow-x: hidden; 
+}
+
+.black-move{
+  background: black;
+  color:white;
+  padding: 5px;
+  border-radius: 2px;
+}
+
+@media(max-width: 960px){
+  .move-history{
+    max-height: 30vh;
+  }
+
+}

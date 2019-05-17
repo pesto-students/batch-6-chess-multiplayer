@@ -18,6 +18,7 @@
     background-color: #f88c22;
     border: 1px solid black;
     border-radius: 6px;
+    width:90vw;
 }
 
 .player-name, .player-rating{
@@ -37,3 +38,9 @@
     border: none;
     font-weight: normal;
 }
+
+@media (min-width: 1024px){
+    .chess-game-container .top-player, .chess-game-container .bottom-player {
+        width:36vw;
+    }
+  }
